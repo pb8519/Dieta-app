@@ -19,840 +19,774 @@
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
 
-const DAYS = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
-
-const MEAL_KCAL = { colazione: 270, pranzo: 400, spuntino: 115, cena: 415 };
-const DAILY_KCAL = 1200;
-
-const MEALS_FULL = {
-  "Lunedì":   { colazione: "Porridge avena 40g + mirtilli 100g + semi di chia 10g", pranzo: "Salmone 150g + riso integrale 80g + zucchine 200g", spuntino: "Mela 150g + noci 15g", cena: "2 uova + spinaci 150g + pane segale 80g + avocado 60g" },
-  "Martedì":  { colazione: "2 uova sode + fragole 100g + pane segale 30g", pranzo: "Pollo 200g + quinoa 150g + insalata rucola/cetriolo", spuntino: "Yogurt soia 150g + miele 5g", cena: "Vellutata zucca 300g + merluzzo 150g + farro 80g" },
-  "Mercoledì":{ colazione: "Smoothie: latte mandorla 200ml + banana 100g + semi di lino 10g", pranzo: "Sgombro 200g + lenticchie 150g + finocchio 200g", spuntino: "Arancia 150g + mandorle 10g", cena: "Tempeh 150g + broccoli 200g + riso basmati 60g" },
-  "Giovedì":  { colazione: "Avena 40g + burro mandorle 15g + lamponi 100g", pranzo: "Tonno 150g + ceci 150g + rucola + pane segale 30g", spuntino: "Pera 150g + noci miste 20g", cena: "Tacchino 200g + cavolfiore 300g + pasta grano saraceno 80g" },
-  "Venerdì":  { colazione: "2 uova alla coque + papaya 100g + pane segale 30g", pranzo: "Salmone 150g + avocado 100g + riso integrale 80g", spuntino: "Yogurt soia 150g + mirtilli 100g", cena: "Minestrone + merluzzo 150g + farro 80g" },
-  "Sabato":   { colazione: "Pancake: 2 uova + farina avena 30g + banana + fragole 100g", pranzo: "Gamberetti 200g + quinoa 150g + cetriolo/pomodorini", spuntino: "Mela 150g + mandorle 15g", cena: "Tofu 200g + asparagi 300g + riso basmati 80g" },
-  "Domenica": { colazione: "Avena 40g + semi chia 10g + frutti di bosco 150g + latte mandorla", pranzo: "Pollo 200g + patate dolci 200g + insalata verde", spuntino: "Arancia 150g + noci 10g", cena: "Frittata 3 uova + verdure + finocchio/arancia + pane segale 30g" },
+// ── MENU 2 SETTIMANE ──────────────────────────────────────────────
+const WEEK1 = {
+  "Lunedì":    { colazione:"Yogurt greco 150g + miele + mirtilli 100g + granola 20g", pranzo:"Orata al forno con pomodorini e olive + patate al forno 150g + insalata verde", spuntino:"2 fette biscottate + yogurt greco 80g + miele", cena:"Pollo al limone 200g + zucchine grigliate + patate al forno 100g" },
+  "Martedì":   { colazione:"2 fette biscottate + miele + yogurt greco 150g + fragole 100g", pranzo:"Insalatona: lattuga, pomodorini, avocado ½, feta 40g, cetriolo, tonno 100g + olio EVO", spuntino:"Mela + mandorle 15g", cena:"Merluzzo al forno con pomodori cotti e capperi + patate lesse 150g + insalata" },
+  "Mercoledì": { colazione:"Yogurt greco 150g + granola 20g + banana ½ + miele", pranzo:"Pollo al curry 200g (yogurt + curcuma + curry) + riso basmati 60g + insalata pomodorini", spuntino:"2 fette biscottate + miele + frutta fresca", cena:"Polipo lesso con patate 150g + prezzemolo + limone + olio EVO + insalata" },
+  "Giovedì":   { colazione:"2 fette biscottate + miele + yogurt greco 150g + mirtilli 80g", pranzo:"Uova strapazzate 3 con pomodori cotti e basilico + patate al forno 150g + insalata", spuntino:"Yogurt greco 100g + miele + noci 10g", cena:"Salmone al forno con finocchio e limone 150g + patate 100g + pomodorini" },
+  "Venerdì":   { colazione:"Yogurt greco 150g + granola 20g + fragole 100g + miele", pranzo:"Pollo ai funghi 200g + patate lesse 150g + insalata verde", spuntino:"2 fette biscottate + avocado ¼ schiacciato + limone", cena:"Orata al cartoccio con pomodorini e erbe 200g + patate 100g + insalata" },
+  "Sabato":    { colazione:"2 fette biscottate + miele + yogurt greco 150g + frutti di bosco 100g", pranzo:"Insalatona greca: lattuga, pomodorini, cetriolo, feta 50g, olive, cipolla rossa + olio EVO", spuntino:"Mela + yogurt greco 80g", cena:"Tacchino al limone e rosmarino 200g + patate 150g + zucchine grigliate" },
+  "Domenica":  { colazione:"Yogurt greco 150g + miele + granola 20g + pesche 100g", pranzo:"Manzo alla griglia 150g + patate al forno 150g + insalata pomodori e basilico", spuntino:"2 fette biscottate + miele + noci 10g", cena:"Merluzzo con pomodori cotti e olive 200g + patate lesse 100g + insalata" },
+};
+const WEEK2 = {
+  "Lunedì":    { colazione:"2 fette biscottate + miele + yogurt greco 150g + mirtilli 100g", pranzo:"Pollo allo yogurt 200g (yogurt + aglio + curcuma + limone) + patate 150g + insalata", spuntino:"Yogurt greco 100g + frutta fresca + miele", cena:"Salmone con avocado e pomodorini 150g + patate lesse 100g + rucola" },
+  "Martedì":   { colazione:"Yogurt greco 150g + granola 20g + fragole 100g + miele", pranzo:"Polipo alla griglia 200g + patate lesse con prezzemolo 150g + insalatona mista", spuntino:"2 fette biscottate + miele + mandorle 10g", cena:"Pollo al curry 200g + zucchine e peperoni + patate 100g" },
+  "Mercoledì": { colazione:"2 fette biscottate + miele + yogurt greco 150g + banana ½", pranzo:"Insalatona: rucola, pomodorini, avocado ½, feta 40g, uovo sodo, cetriolo + olio EVO", spuntino:"Yogurt greco 100g + miele + noci 10g", cena:"Orata al forno con finocchio e limone 200g + patate 150g + pomodori cotti" },
+  "Giovedì":   { colazione:"Yogurt greco 150g + granola 20g + mirtilli 100g + miele", pranzo:"Tacchino ai funghi 200g + patate lesse 150g + insalata verde con pomodorini", spuntino:"2 fette biscottate + avocado schiacciato + limone", cena:"Merluzzo al vapore con pomodori cotti e capperi + patate 150g + insalata" },
+  "Venerdì":   { colazione:"2 fette biscottate + miele + yogurt greco 150g + fragole 100g", pranzo:"Pollo al limone 200g + patate 150g + insalatona con pomodorini e feta 30g", spuntino:"Mela + yogurt greco 80g + miele", cena:"Salmone al cartoccio con pomodorini e olive 150g + patate 100g + rucola e avocado" },
+  "Sabato":    { colazione:"Yogurt greco 150g + granola 20g + frutti di bosco 100g + miele", pranzo:"Manzo alla griglia 150g + patate 150g + insalata pomodori e basilico", spuntino:"2 fette biscottate + miele + noci 10g", cena:"Polipo con patate e prezzemolo 200g + insalata verde + pomodorini" },
+  "Domenica":  { colazione:"2 fette biscottate + miele + yogurt greco 150g + frutta fresca 100g", pranzo:"Pollo ai funghi 200g + patate lesse 150g + insalata mista con feta 30g", spuntino:"Yogurt greco 100g + granola 10g + miele", cena:"Orata al forno con pomodori cotti e olive 200g + patate 100g + insalata verde" },
 };
 
-const MEALS_FASTING_NO_BREAKFAST = {
-  "Lunedì":   { pranzo: "Salmone 180g + riso integrale 100g + zucchine 200g + avocado 60g", spuntino: "Mela 150g + noci 20g + 2 quadretti cioccolato fondente 85%", cena: "2 uova + spinaci 200g + pane segale 80g + hummus 50g" },
-  "Martedì":  { pranzo: "Pollo 250g + quinoa 150g + insalata rucola/cetriolo + semi di zucca 10g", spuntino: "Yogurt soia 150g + frutti di bosco 100g", cena: "Vellutata zucca 300g + merluzzo 180g + farro 80g" },
-  "Mercoledì":{ pranzo: "Sgombro 200g + lenticchie 200g + finocchio 200g + olio EVO", spuntino: "Arancia 150g + mandorle 20g", cena: "Tempeh 180g + broccoli 250g + riso basmati 80g" },
-  "Giovedì":  { pranzo: "Tonno 180g + ceci 200g + rucola + pane segale 60g", spuntino: "Pera 150g + noci miste 25g", cena: "Tacchino 250g + cavolfiore 300g + pasta grano saraceno 80g" },
-  "Venerdì":  { pranzo: "Salmone 180g + avocado 100g + riso integrale 100g + spinaci", spuntino: "Yogurt soia 150g + mirtilli 100g + semi chia 5g", cena: "Minestrone abbondante + merluzzo 180g + farro 80g" },
-  "Sabato":   { pranzo: "Gamberetti 250g + quinoa 150g + cetriolo/pomodorini + avocado 60g", spuntino: "Mela 150g + mandorle 20g", cena: "Tofu 250g + asparagi 300g + riso basmati 80g" },
-  "Domenica": { pranzo: "Pollo 250g + patate dolci 200g + insalata verde abbondante", spuntino: "Arancia 150g + noci 15g", cena: "Frittata 3 uova + verdure miste + finocchio/arancia + pane segale 60g" },
-};
-
-const MEALS_FASTING_NO_DINNER = {
-  "Lunedì":   { colazione: "Porridge avena 50g + mirtilli 100g + semi di chia 10g + noci 15g", pranzo: "Salmone 180g + riso integrale 100g + zucchine 200g + avocado 60g", spuntino: "Mela 150g + burro mandorle 15g (entro le 16:00)" },
-  "Martedì":  { colazione: "2 uova sode + fragole 100g + pane segale 60g + avocado 40g", pranzo: "Pollo 250g + quinoa 150g + insalata rucola/cetriolo", spuntino: "Yogurt soia 150g + miele 5g + frutti di bosco 80g (entro le 16:00)" },
-  "Mercoledì":{ colazione: "Smoothie: latte mandorla 200ml + banana 100g + semi di lino 10g", pranzo: "Sgombro 200g + lenticchie 200g + finocchio 200g", spuntino: "Arancia 150g + mandorle 20g (entro le 16:00)" },
-  "Giovedì":  { colazione: "Avena 50g + burro mandorle 15g + lamponi 100g + semi chia 5g", pranzo: "Tonno 180g + ceci 200g + rucola + pane segale 60g", spuntino: "Pera 150g + noci miste 20g (entro le 16:00)" },
-  "Venerdì":  { colazione: "2 uova alla coque + papaya 100g + pane segale 60g + avocado 40g", pranzo: "Salmone 180g + avocado 60g + riso integrale 100g", spuntino: "Yogurt soia 150g + mirtilli 100g (entro le 16:00)" },
-  "Sabato":   { colazione: "Pancake: 2 uova + farina avena 40g + banana + fragole 100g", pranzo: "Gamberetti 250g + quinoa 150g + cetriolo/pomodorini", spuntino: "Mela 150g + mandorle 20g (entro le 16:00)" },
-  "Domenica": { colazione: "Avena 50g + semi chia 10g + frutti di bosco 150g + latte mandorla + noci 10g", pranzo: "Pollo 250g + patate dolci 200g + insalata verde", spuntino: "Arancia 150g + noci 15g (entro le 16:00)" },
-};
-
-const FASTING_WINDOWS = {
-  "no_breakfast": { label: "16:8 · Salto colazione", hours: "12:00–20:00", icon: "🌅", color: "#e07a5f" },
-  "no_dinner":    { label: "16:8 · Salto cena",      hours: "8:00–16:00",  icon: "🌇", color: "#6c63ac" },
-};
-
+const DAYS = ["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"];
+const MEAL_ICONS  = { colazione:"☀️", pranzo:"🥗", spuntino:"🍎", cena:"🌙" };
+const MEAL_LABELS = { colazione:"Colazione", pranzo:"Pranzo", spuntino:"Spuntino", cena:"Cena" };
+const MEAL_KCAL   = { colazione:270, pranzo:400, spuntino:120, cena:410 };
+const DAILY_KCAL  = 1200;
+const START_KG = 56; const GOAL_KG = 50;
 const WATER_GLASSES = 8;
 
 const EXTRA_TIPS = [
-  { id: "camminata",   icon: "🚶‍♀️", label: "Camminata 30 min",               desc: "Brucia calorie e migliora la circolazione" },
-  { id: "ipopressivi", icon: "🧘‍♀️", label: "Esercizi ipopressivi",           desc: "Fondamentale per diastasi e pancia piatta" },
-  { id: "sonno",       icon: "😴",  label: "7-8 ore di sonno",               desc: "Regola cortisolo e appetito" },
-  { id: "mastica",     icon: "🍽️", label: "Mangiato lentamente",             desc: "Masticare bene riduce il gonfiore del 30%" },
-  { id: "notv",        icon: "📵",  label: "Niente telefono mentre mangio",   desc: "Migliora digestione e consapevolezza" },
-  { id: "tisana",      icon: "🫖",  label: "Tisana di finocchio dopo cena",   desc: "Sgonfia la pancia" },
-  { id: "limone",      icon: "🍋",  label: "Acqua tiepida + limone + curcuma",desc: "Al mattino a stomaco vuoto" },
+  { id:"camminata",   icon:"🚶‍♀️", label:"Camminata 30 min",                desc:"Brucia calorie e migliora la circolazione" },
+  { id:"ipopressivi", icon:"🧘‍♀️", label:"Esercizi ipopressivi",            desc:"Fondamentale per diastasi e pancia piatta" },
+  { id:"sonno",       icon:"😴",  label:"7-8 ore di sonno",                desc:"Regola cortisolo e appetito" },
+  { id:"mastica",     icon:"🍽️", label:"Mangiato lentamente",              desc:"Riduce il gonfiore del 30%" },
+  { id:"notv",        icon:"📵",  label:"Niente telefono mentre mangio",    desc:"Migliora digestione e consapevolezza" },
+  { id:"tisana",      icon:"🫖",  label:"Tisana di finocchio dopo cena",    desc:"Sgonfia la pancia" },
+  { id:"limone",      icon:"🍋",  label:"Acqua tiepida + limone + curcuma", desc:"Al mattino a stomaco vuoto" },
 ];
 
-const mealIcons  = { colazione: "☀️", pranzo: "🥗", spuntino: "🍎", cena: "🌙" };
-const mealLabels = { colazione: "Colazione", pranzo: "Pranzo", spuntino: "Spuntino", cena: "Cena" };
+const FASTING_WINDOWS = {
+  no_breakfast:{ label:"16:8 · Salto colazione", hours:"12:00–20:00", icon:"🌅", color:"#e07a5f" },
+  no_dinner:   { label:"16:8 · Salto cena",      hours:"8:00–16:00",  icon:"🌇", color:"#6c63ac" },
+};
 
-function getTodayIndex() { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; }
+// date helpers
+function dateToKey(d) { return d.toISOString().slice(0,10); }
+function keyToDay(key) {
+  const d = new Date(key + "T12:00:00");
+  return DAYS[d.getDay() === 0 ? 6 : d.getDay()-1];
+}
+function getWeekMenu(key) {
+  // week 1 starts from today minus up to 13 days, alternate weeks
+  const base = new Date("2025-01-06"); // Monday ref
+  const target = new Date(key + "T12:00:00");
+  const diff = Math.floor((target - base) / (7*24*3600*1000));
+  return diff % 2 === 0 ? WEEK1 : WEEK2;
+}
+function todayKey() { return dateToKey(new Date()); }
+function keyLabel(key) {
+  const d = new Date(key + "T12:00:00");
+  return d.toLocaleDateString("it-IT", { weekday:"short", day:"numeric", month:"short" });
+}
+function addDays(key, n) {
+  const d = new Date(key + "T12:00:00");
+  d.setDate(d.getDate() + n);
+  return dateToKey(d);
+}
 
+// storage
+const load = (k, def) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : def; } catch { return def; } };
+const save = (k, v)   => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+// ── APP ───────────────────────────────────────────────────────────
 function App() {
-  const [selectedDay, setSelectedDay] = useState(getTodayIndex());
-  const load = (k, def) => { try { const s = localStorage.getItem(k); return s ? JSON.parse(s) : def; } catch { return def; } };
-
-  const [checked,     setChecked]     = useState(() => load("dietaTracker", {}));
-  const [water,       setWater]       = useState(() => load("dietaWater",   {}));
-  const [tips,        setTips]        = useState(() => load("dietaTips",    {}));
-  const [fastingMode, setFastingMode] = useState(() => load("dietaFasting", {}));
-  const [cheats,      setCheats]      = useState(() => load("dietaCheats",  {}));
-  // mealEdits: { "Lunedì-pranzo": "testo modificato" }
-  const [mealEdits,   setMealEdits]   = useState(() => load("dietaMealEdits", {}));
-  const [weightLog,   setWeightLog]   = useState(() => load("dietaWeightLog", []));
-  const [measLog,     setMeasLog]     = useState(() => load("dietaMeasLog",   []));
-  const [showWeightPanel, setShowWeightPanel] = useState(false);
-  const [weightInput,     setWeightInput]     = useState("");
-  const [showMeasPanel,   setShowMeasPanel]   = useState(false);
-  const [measInput,       setMeasInput]       = useState({ vita: "", fianchi: "", cosciaDx: "", coschSx: "", braccio: "", petto: "" });
-  const [activeBodyTab,   setActiveBodyTab]   = useState("peso"); // "peso" | "misure"
-  // wellness: { "2024-01-01": { sonno: 7.5, gonfiore: 3, gonfioreCm: 82, note: "..." } }
-  const [wellness,        setWellness]        = useState(() => load("dietaWellness", {}));
-  // integratori: [ { id, name, dose, unit } ]
-  const [integratoriList, setIntegratoriList] = useState(() => load("dietaIntegratori", [
-    { id: 1, name: "Magnesio", dose: "300", unit: "mg" },
-    { id: 2, name: "Omega-3",  dose: "1",   unit: "cps" },
-    { id: 3, name: "Vitamina D", dose: "1000", unit: "UI" },
+  const [selectedKey, setSelectedKey]   = useState(todayKey());
+  // data keyed by date string "YYYY-MM-DD"
+  const [checked,      setChecked]      = useState(() => load("v2Checked", {}));
+  const [customMeals,  setCustomMeals]  = useState(() => load("v2Custom", {}));   // {datekey: {colazione:"...", ...}}
+  const [water,        setWater]        = useState(() => load("v2Water", {}));
+  const [tips,         setTips]         = useState(() => load("v2Tips", {}));
+  const [fastingMode,  setFastingMode]  = useState(() => load("v2Fasting", {}));
+  const [cheats,       setCheats]       = useState(() => load("v2Cheats", {}));
+  const [weightLog,    setWeightLog]    = useState(() => load("v2Weight", []));
+  const [measLog,      setMeasLog]      = useState(() => load("v2Meas", []));
+  const [wellness,     setWellness]     = useState(() => load("v2Wellness", {}));
+  const [integratoriList,   setIntegratoriList]   = useState(() => load("v2Integr", [
+    {id:1,name:"Magnesio",dose:"300",unit:"mg"},
+    {id:2,name:"Omega-3",dose:"1",unit:"cps"},
+    {id:3,name:"Vitamina D",dose:"1000",unit:"UI"},
   ]));
-  // integratoriCheck: { "2024-01-01-1": true }
-  const [integratoriCheck, setIntegratoriCheck] = useState(() => load("dietaIntCheck", {}));
-  const [showAddIntegr,   setShowAddIntegr]   = useState(false);
-  const [newIntegr,       setNewIntegr]       = useState({ name: "", dose: "", unit: "mg" });
-  const [wellnessInput,   setWellnessInput]   = useState({ sonno: "", gonfiore: "", gonfioreCm: "", note: "" });
+  const [integratoriCheck,  setIntegratoriCheck]  = useState(() => load("v2IntCheck", {}));
+
+  useEffect(() => save("v2Checked",  checked),          [checked]);
+  useEffect(() => save("v2Custom",   customMeals),      [customMeals]);
+  useEffect(() => save("v2Water",    water),            [water]);
+  useEffect(() => save("v2Tips",     tips),             [tips]);
+  useEffect(() => save("v2Fasting",  fastingMode),      [fastingMode]);
+  useEffect(() => save("v2Cheats",   cheats),           [cheats]);
+  useEffect(() => save("v2Weight",   weightLog),        [weightLog]);
+  useEffect(() => save("v2Meas",     measLog),          [measLog]);
+  useEffect(() => save("v2Wellness", wellness),         [wellness]);
+  useEffect(() => save("v2Integr",   integratoriList),  [integratoriList]);
+  useEffect(() => save("v2IntCheck", integratoriCheck), [integratoriCheck]);
+
+  // ui state
+  const [editingMeal,     setEditingMeal]     = useState(null);
+  const [editText,        setEditText]        = useState("");
+  const [showCheatForm,   setShowCheatForm]   = useState(false);
+  const [cheatForm,       setCheatForm]       = useState({food:"",qty:"",unit:"g",kcal:"",note:""});
+  const [showWeightForm,  setShowWeightForm]  = useState(false);
+  const [weightInput,     setWeightInput]     = useState("");
+  const [weightDateInput, setWeightDateInput] = useState(todayKey());
+  const [showMeasForm,    setShowMeasForm]    = useState(false);
+  const [measInput,       setMeasInput]       = useState({vita:"",fianchi:"",cosciaDx:"",cosciaSx:"",braccio:"",petto:""});
+  const [measDateInput,   setMeasDateInput]   = useState(todayKey());
   const [showWellnessForm,setShowWellnessForm]= useState(false);
+  const [wellnessInput,   setWellnessInput]   = useState({sonno:"",gonfiore:"",gonfioreCm:"",note:""});
+  const [showAddIntegr,   setShowAddIntegr]   = useState(false);
+  const [newIntegr,       setNewIntegr]       = useState({name:"",dose:"",unit:"mg"});
+  const [activeBodyTab,   setActiveBodyTab]   = useState("peso");
+  const [activeTab,       setActiveTab]       = useState("dieta"); // dieta | corpo | wellness | integratori
 
-  const [cheatForm,     setCheatForm]     = useState({ food: "", qty: "", unit: "g", kcal: "", note: "" });
-  const [showCheatForm, setShowCheatForm] = useState(false);
-  const [editingMeal,   setEditingMeal]   = useState(null); // "colazione" | null
-  const [editText,      setEditText]      = useState("");
+  // derived
+  const dayName   = keyToDay(selectedKey);
+  const weekMenu  = getWeekMenu(selectedKey);
+  const todayFasting = fastingMode[selectedKey] || null;
+  const baseMeals = weekMenu[dayName] || WEEK1[dayName];
+  const dayCustom = customMeals[selectedKey] || {};
 
-  useEffect(() => { try { localStorage.setItem("dietaTracker",   JSON.stringify(checked));     } catch {} }, [checked]);
-  useEffect(() => { try { localStorage.setItem("dietaWater",     JSON.stringify(water));       } catch {} }, [water]);
-  useEffect(() => { try { localStorage.setItem("dietaTips",      JSON.stringify(tips));        } catch {} }, [tips]);
-  useEffect(() => { try { localStorage.setItem("dietaFasting",   JSON.stringify(fastingMode)); } catch {} }, [fastingMode]);
-  useEffect(() => { try { localStorage.setItem("dietaCheats",    JSON.stringify(cheats));      } catch {} }, [cheats]);
-  useEffect(() => { try { localStorage.setItem("dietaMealEdits", JSON.stringify(mealEdits));   } catch {} }, [mealEdits]);
-  useEffect(() => { try { localStorage.setItem("dietaWeightLog",  JSON.stringify(weightLog));        } catch {} }, [weightLog]);
-  useEffect(() => { try { localStorage.setItem("dietaWellness",   JSON.stringify(wellness));          } catch {} }, [wellness]);
-  useEffect(() => { try { localStorage.setItem("dietaIntegratori",JSON.stringify(integratoriList));   } catch {} }, [integratoriList]);
-  useEffect(() => { try { localStorage.setItem("dietaIntCheck",   JSON.stringify(integratoriCheck));  } catch {} }, [integratoriCheck]);
-  useEffect(() => { try { localStorage.setItem("dietaMeasLog",   JSON.stringify(measLog));     } catch {} }, [measLog]);
+  // build active meals merging custom overrides
+  let activeMealKeys = Object.keys(baseMeals);
+  if (todayFasting === "no_breakfast") activeMealKeys = activeMealKeys.filter(m => m !== "colazione");
+  if (todayFasting === "no_dinner")    activeMealKeys = activeMealKeys.filter(m => m !== "cena");
+  const dayMeals = Object.fromEntries(activeMealKeys.map(m => [m, dayCustom[m] ?? baseMeals[m]]));
 
-  const day = DAYS[selectedDay];
-  const todayFasting = fastingMode[day] || null;
-
-  const baseMeals = todayFasting === "no_breakfast" ? MEALS_FASTING_NO_BREAKFAST[day]
-    : todayFasting === "no_dinner" ? MEALS_FASTING_NO_DINNER[day]
-    : MEALS_FULL[day];
-
-  // merge custom edits
-  const dayMeals = Object.fromEntries(
-    Object.entries(baseMeals).map(([k, v]) => [k, mealEdits[`${day}-${k}`] ?? v])
-  );
-  const activeMealKeys = Object.keys(dayMeals);
-  const totalMeals = activeMealKeys.length;
-
-  // kcal budget
-  const dayCheatList   = cheats[day] || [];
-  const totalCheatKcal = dayCheatList.reduce((s, c) => s + (parseInt(c.kcal) || 0), 0);
-  const completedMealKeys = activeMealKeys.filter(m => checked[`${day}-${m}`]);
-  const consumedDietKcal  = completedMealKeys.reduce((s, m) => s + (MEAL_KCAL[m] || 0), 0);
-  const remainingKcal     = Math.max(0, DAILY_KCAL - consumedDietKcal - totalCheatKcal);
+  const dayCheatList   = cheats[selectedKey] || [];
+  const totalCheatKcal = dayCheatList.reduce((s,c) => s+(parseInt(c.kcal)||0), 0);
+  const completedMealKeys = activeMealKeys.filter(m => checked[selectedKey+"-"+m]);
+  const consumedDietKcal  = completedMealKeys.reduce((s,m) => s+(MEAL_KCAL[m]||0), 0);
   const totalKcalDay      = consumedDietKcal + totalCheatKcal;
-  const budgetPct         = Math.min(100, Math.round((totalKcalDay / DAILY_KCAL) * 100));
+  const remainingKcal     = Math.max(0, DAILY_KCAL - totalKcalDay);
   const overBudget        = totalKcalDay > DAILY_KCAL;
+  const budgetPct         = Math.min(100, Math.round((totalKcalDay/DAILY_KCAL)*100));
+  const completedMeals    = completedMealKeys.length;
+  const totalMeals        = activeMealKeys.length;
+  const mealPct           = Math.round((completedMeals/totalMeals)*100);
+  const glasses           = water[selectedKey] || 0;
+  const waterPct          = Math.round((glasses/WATER_GLASSES)*100);
+  const completedTips     = EXTRA_TIPS.filter(t => tips[selectedKey+"-"+t.id]).length;
+  const todayWellness     = wellness[selectedKey] || {};
+  const lastWeight        = weightLog.length > 0 ? weightLog[weightLog.length-1] : null;
+  const lostKg            = lastWeight ? +(START_KG - lastWeight.kg).toFixed(1) : 0;
+  const toGoKg            = lastWeight ? +(lastWeight.kg - GOAL_KG).toFixed(1) : START_KG-GOAL_KG;
+  const weightPct         = Math.min(100, Math.max(0, Math.round(((START_KG-(lastWeight?.kg??START_KG))/(START_KG-GOAL_KG))*100)));
+  const lastMeas          = measLog.length > 0 ? measLog[measLog.length-1] : null;
+  const firstMeas         = measLog.length > 0 ? measLog[0] : null;
 
-  const completedMeals = completedMealKeys.length;
-  const progress       = Math.round((completedMeals / totalMeals) * 100);
-  const glasses        = water[day] || 0;
-  const waterProgress  = Math.round((glasses / WATER_GLASSES) * 100);
-  const completedTips  = EXTRA_TIPS.filter(t => tips[`${day}-${t.id}`]).length;
+  // 7-day strip around selectedKey
+  const strip = Array.from({length:7},(_,i) => addDays(selectedKey, i-3));
 
-  const weekProgress = DAYS.map(d => {
-    const fm   = fastingMode[d] || null;
-    const keys = fm === "no_breakfast" ? Object.keys(MEALS_FASTING_NO_BREAKFAST[d])
-      : fm === "no_dinner" ? Object.keys(MEALS_FASTING_NO_DINNER[d])
-      : Object.keys(MEALS_FULL[d]);
-    return keys.filter(m => checked[`${d}-${m}`]).length;
-  });
-
-  const toggleMeal  = m  => setChecked(p => ({ ...p, [`${day}-${m}`]: !p[`${day}-${m}`] }));
-  const toggleTip   = id => setTips(p    => ({ ...p, [`${day}-${id}`]: !p[`${day}-${id}`] }));
-  const setGlasses  = n  => setWater(p   => ({ ...p, [day]: n }));
+  // handlers
+  const toggleMeal  = m  => setChecked(p => ({...p, [selectedKey+"-"+m]: !p[selectedKey+"-"+m]}));
+  const toggleTip   = id => setTips(p    => ({...p, [selectedKey+"-"+id]: !p[selectedKey+"-"+id]}));
+  const setGlasses  = n  => setWater(p   => ({...p, [selectedKey]: n}));
+  const toggleIntegr= id => setIntegratoriCheck(p => ({...p, [selectedKey+"-"+id]: !p[selectedKey+"-"+id]}));
 
   const setDayFasting = mode => {
-    setFastingMode(p => ({ ...p, [day]: p[day] === mode ? null : mode }));
-    setChecked(p => { const n = { ...p }; Object.keys(mealLabels).forEach(m => delete n[`${day}-${m}`]); return n; });
+    setFastingMode(p => ({...p, [selectedKey]: p[selectedKey]===mode ? null : mode}));
+    setChecked(p => { const n={...p}; Object.keys(MEAL_LABELS).forEach(m => delete n[selectedKey+"-"+m]); return n; });
   };
 
-  const startEditMeal = meal => { setEditingMeal(meal); setEditText(dayMeals[meal]); };
-  const saveMealEdit  = ()   => {
-    setMealEdits(p => ({ ...p, [`${day}-${editingMeal}`]: editText }));
+  const startEdit = meal => { setEditingMeal(meal); setEditText(dayMeals[meal]||""); };
+  const saveEdit  = ()   => {
+    setCustomMeals(p => ({...p, [selectedKey]: {...(p[selectedKey]||{}), [editingMeal]: editText}}));
     setEditingMeal(null);
   };
-  const resetMealEdit = meal => {
-    setMealEdits(p => { const n = { ...p }; delete n[`${day}-${meal}`]; return n; });
+  const resetEdit = meal => {
+    setCustomMeals(p => { const n={...p}; if(n[selectedKey]) delete n[selectedKey][meal]; return n; });
   };
 
   const addCheat = () => {
     if (!cheatForm.food.trim()) return;
-    const entry = { id: Date.now(), ...cheatForm, qty: cheatForm.qty || "?", kcal: cheatForm.kcal || "" };
-    setCheats(p => ({ ...p, [day]: [...(p[day] || []), entry] }));
-    setCheatForm({ food: "", qty: "", unit: "g", kcal: "", note: "" });
+    const e = {id:Date.now(),...cheatForm,qty:cheatForm.qty||"?",kcal:cheatForm.kcal||""};
+    setCheats(p => ({...p,[selectedKey]:[...(p[selectedKey]||[]),e]}));
+    setCheatForm({food:"",qty:"",unit:"g",kcal:"",note:""});
     setShowCheatForm(false);
   };
-  const removeCheat = id => setCheats(p => ({ ...p, [day]: (p[day] || []).filter(c => c.id !== id) }));
+  const removeCheat = id => setCheats(p => ({...p,[selectedKey]:(p[selectedKey]||[]).filter(c=>c.id!==id)}));
 
-  // peso helpers
-  const START_KG = 56; const GOAL_KG = 50;
-  const todayStr = new Date().toISOString().slice(0,10);
-  const lastWeight = weightLog.length > 0 ? weightLog[weightLog.length - 1] : null;
-  const firstWeight = weightLog.length > 0 ? weightLog[0] : null;
   const saveWeight = () => {
-    const kg = parseFloat(weightInput.replace(",", "."));
-    if (isNaN(kg) || kg < 30 || kg > 200) return;
-    const entry = { date: todayStr, kg };
-    setWeightLog(p => { const filtered = p.filter(e => e.date !== todayStr); return [...filtered, entry].sort((a,b) => a.date.localeCompare(b.date)); });
-    setWeightInput(""); setShowWeightPanel(false);
+    const kg = parseFloat(weightInput.replace(",","."));
+    if (isNaN(kg)||kg<30||kg>200) return;
+    const entry = {date:weightDateInput, kg};
+    setWeightLog(p => [...p.filter(e=>e.date!==weightDateInput),entry].sort((a,b)=>a.date.localeCompare(b.date)));
+    setWeightInput(""); setShowWeightForm(false);
   };
-  const saveMeas = () => {
-    const entry = { date: todayStr, ...Object.fromEntries(Object.entries(measInput).map(([k,v]) => [k, v ? parseFloat(v.replace(",",".")) : null])) };
-    setMeasLog(p => { const filtered = p.filter(e => e.date !== todayStr); return [...filtered, entry].sort((a,b) => a.date.localeCompare(b.date)); });
-    setMeasInput({ vita: "", fianchi: "", cosciaDx: "", coschSx: "", braccio: "", petto: "" }); setShowMeasPanel(false);
-  };
-  const lastMeas = measLog.length > 0 ? measLog[measLog.length - 1] : null;
-  const firstMeas = measLog.length > 0 ? measLog[0] : null;
-  const measFields = [
-    { key: "vita",    label: "Vita",    icon: "👗" },
-    { key: "fianchi", label: "Fianchi", icon: "🔵" },
-    { key: "cosciaDx", label: "Coscia Dx", icon: "🦵" },
-    { key: "coschSx", label: "Coscia Sx", icon: "🦵" },
-    { key: "braccio", label: "Braccio", icon: "💪" },
-    { key: "petto",   label: "Petto",   icon: "📏" },
-  ];
+  const removeWeight = date => setWeightLog(p => p.filter(e => e.date!==date));
 
-  // wellness helpers
-  const todayWellness = wellness[todayStr] || {};
+  const saveMeas = () => {
+    const entry = {date:measDateInput,...Object.fromEntries(Object.entries(measInput).map(([k,v])=>[k,v?parseFloat(v.replace(",",".")):null]))};
+    setMeasLog(p => [...p.filter(e=>e.date!==measDateInput),entry].sort((a,b)=>a.date.localeCompare(b.date)));
+    setMeasInput({vita:"",fianchi:"",cosciaDx:"",cosciaSx:"",braccio:"",petto:""}); setShowMeasForm(false);
+  };
+
   const saveWellness = () => {
     const w = {
-      sonno:      wellnessInput.sonno      ? parseFloat(wellnessInput.sonno.replace(",","."))      : todayWellness.sonno,
-      gonfiore:   wellnessInput.gonfiore   ? parseInt(wellnessInput.gonfiore)                      : todayWellness.gonfiore,
-      gonfioreCm: wellnessInput.gonfioreCm ? parseFloat(wellnessInput.gonfioreCm.replace(",",".")) : todayWellness.gonfioreCm,
-      note:       wellnessInput.note !== "" ? wellnessInput.note                                   : todayWellness.note,
+      sonno:      wellnessInput.sonno      ? parseFloat(wellnessInput.sonno)      : todayWellness.sonno,
+      gonfiore:   wellnessInput.gonfiore   ? parseInt(wellnessInput.gonfiore)      : todayWellness.gonfiore,
+      gonfioreCm: wellnessInput.gonfioreCm ? parseFloat(wellnessInput.gonfioreCm) : todayWellness.gonfioreCm,
+      note:       wellnessInput.note!==""  ? wellnessInput.note                    : todayWellness.note,
     };
-    setWellness(p => ({ ...p, [todayStr]: { ...todayWellness, ...Object.fromEntries(Object.entries(w).filter(([,v]) => v !== undefined && v !== null && v !== "")) } }));
-    setWellnessInput({ sonno: "", gonfiore: "", gonfioreCm: "", note: "" });
-    setShowWellnessForm(false);
+    setWellness(p => ({...p,[selectedKey]:{...todayWellness,...Object.fromEntries(Object.entries(w).filter(([,v])=>v!==undefined&&v!==null&&v!==""))}}));
+    setWellnessInput({sonno:"",gonfiore:"",gonfioreCm:"",note:""}); setShowWellnessForm(false);
   };
-  const toggleIntegr = (id) => {
-    const key = todayStr + "-" + id;
-    setIntegratoriCheck(p => ({ ...p, [key]: !p[key] }));
-  };
+
   const addIntegr = () => {
     if (!newIntegr.name.trim()) return;
-    setIntegratoriList(p => [...p, { id: Date.now(), ...newIntegr }]);
-    setNewIntegr({ name: "", dose: "", unit: "mg" });
-    setShowAddIntegr(false);
+    setIntegratoriList(p => [...p,{id:Date.now(),...newIntegr}]);
+    setNewIntegr({name:"",dose:"",unit:"mg"}); setShowAddIntegr(false);
   };
-  const removeIntegr = (id) => setIntegratoriList(p => p.filter(i => i.id !== id));
-  const gonfioreEmoji = (v) => v <= 1 ? "😊" : v <= 2 ? "🙂" : v <= 3 ? "😐" : v <= 4 ? "😔" : "😣";
-  const sonnoEmoji = (h) => h >= 7 ? "😴✅" : h >= 6 ? "😴" : "😴⚠️";
 
-  const fastingInfo = todayFasting ? FASTING_WINDOWS[todayFasting] : null;
+  const gonfioreEmoji = v => v<=1?"😊":v<=2?"🙂":v<=3?"😐":v<=4?"😔":"😣";
+  const measFields = [
+    {key:"vita",label:"Vita",icon:"👗"},
+    {key:"fianchi",label:"Fianchi",icon:"🔵"},
+    {key:"cosciaDx",label:"Coscia Dx",icon:"🦵"},
+    {key:"cosciaSx",label:"Coscia Sx",icon:"🦵"},
+    {key:"braccio",label:"Braccio",icon:"💪"},
+    {key:"petto",label:"Petto",icon:"📏"},
+  ];
 
-  // styles
-  const card = { background: "white", borderRadius: 16, padding: "16px 18px", marginTop: 12, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" };
+  const card = {background:"white",borderRadius:16,padding:"16px 18px",marginTop:12,boxShadow:"0 2px 12px rgba(0,0,0,0.06)"};
+  const isToday = selectedKey === todayKey();
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #f0faf4 0%, #e8f5f0 100%)", fontFamily: "'Segoe UI', system-ui, sans-serif", paddingBottom: 40 }}>
+    <div style={{minHeight:"100vh",background:"#f0faf4",paddingBottom:80}}>
 
       {/* Header */}
-      <div style={{ background: "linear-gradient(135deg, #2d6a4f 0%, #40916c 100%)", padding: "24px 20px 20px", color: "white" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto" }}>
-          <div style={{ fontSize: 13, opacity: 0.8, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Dieta Antinfiammatoria</div>
-          <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 2 }}>🌿 Il mio tracker</div>
-          <div style={{ fontSize: 13, opacity: 0.75 }}>1.200 kcal · Obiettivo 50 kg</div>
+      <div style={{background:"linear-gradient(135deg,#2d6a4f,#40916c)",padding:"24px 20px 16px",color:"white"}}>
+        <div style={{maxWidth:480,margin:"0 auto"}}>
+          <div style={{fontSize:13,opacity:0.8,letterSpacing:1,textTransform:"uppercase",marginBottom:4}}>Dieta Antinfiammatoria</div>
+          <div style={{fontSize:22,fontWeight:700,marginBottom:2}}>🌿 Il mio tracker</div>
+          <div style={{fontSize:13,opacity:0.75}}>1.200 kcal · Obiettivo 50 kg · Paola</div>
         </div>
       </div>
 
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "0 16px" }}>
-
-        {/* Day selector */}
-        <div style={{ display: "flex", gap: 6, overflowX: "auto", padding: "16px 0 8px", scrollbarWidth: "none" }}>
-          {DAYS.map((d, i) => {
-            const done = weekProgress[i]; const isToday = i === getTodayIndex(); const isSelected = i === selectedDay;
+      {/* Date strip */}
+      <div style={{background:"white",boxShadow:"0 2px 8px rgba(0,0,0,0.06)"}}>
+        <div style={{maxWidth:480,margin:"0 auto",display:"flex",overflowX:"auto",padding:"10px 12px",gap:6,scrollbarWidth:"none"}}>
+          {strip.map(key => {
+            const d = new Date(key+"T12:00:00");
+            const dn = DAYS[d.getDay()===0?6:d.getDay()-1];
+            const isSel = key===selectedKey;
+            const isTod = key===todayKey();
+            const done  = Object.keys(WEEK1[dn]||{}).filter(m=>checked[key+"-"+m]).length;
             return (
-              <button key={d} onClick={() => setSelectedDay(i)} style={{
-                flex: "0 0 auto", padding: "8px 12px", borderRadius: 20,
-                border: isSelected ? "2px solid #2d6a4f" : "2px solid transparent",
-                background: isSelected ? "#2d6a4f" : done >= 3 ? "#d8f3dc" : "white",
-                color: isSelected ? "white" : "#2d6a4f", fontWeight: isSelected ? 700 : 500, fontSize: 13, cursor: "pointer",
-                boxShadow: isSelected ? "0 2px 8px rgba(45,106,79,0.3)" : "0 1px 3px rgba(0,0,0,0.08)", position: "relative"
+              <button key={key} onClick={()=>setSelectedKey(key)} style={{
+                flex:"0 0 auto",display:"flex",flexDirection:"column",alignItems:"center",
+                padding:"8px 12px",borderRadius:14,border:"none",cursor:"pointer",
+                background:isSel?"#2d6a4f":isTod?"#e8f5f0":"white",
+                color:isSel?"white":isTod?"#2d6a4f":"#888",
+                boxShadow:isSel?"0 2px 8px rgba(45,106,79,0.4)":"none",
+                position:"relative"
               }}>
-                {d.slice(0, 3)}
-                {fastingMode[d] && <span style={{ fontSize: 9, marginLeft: 2 }}>⚡</span>}
-                {cheats[d]?.length > 0 && <span style={{ fontSize: 9, marginLeft: 1 }}>🍕</span>}
-                {isToday && <span style={{ position: "absolute", top: -4, right: -4, width: 8, height: 8, borderRadius: "50%", background: "#f4a261", border: "1px solid white" }} />}
+                <div style={{fontSize:10,fontWeight:600}}>{dn.slice(0,3)}</div>
+                <div style={{fontSize:15,fontWeight:700,marginTop:1}}>{d.getDate()}</div>
+                {done>0&&<div style={{width:5,height:5,borderRadius:"50%",background:isSel?"rgba(255,255,255,0.7)":"#74c69d",marginTop:3}}/>}
+                {isTod&&!isSel&&<div style={{position:"absolute",top:4,right:4,width:6,height:6,borderRadius:"50%",background:"#f4a261"}}/>}
               </button>
             );
           })}
         </div>
+      </div>
 
-        {/* Kcal budget bar */}
-        <div style={{ ...card, marginTop: 8, padding: "12px 18px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#1b4332" }}>📊 Budget calorico — {day}</div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: overBudget ? "#c1440e" : "#2d6a4f" }}>
-              {totalKcalDay} / {DAILY_KCAL} kcal
-            </div>
-          </div>
-          <div style={{ height: 10, borderRadius: 8, background: "#e9f5ee", overflow: "hidden", marginBottom: 6 }}>
-            <div style={{
-              height: "100%", borderRadius: 8, transition: "width 0.4s ease",
-              width: `${budgetPct}%`,
-              background: overBudget ? "linear-gradient(90deg, #f4a261, #e76f51)" : "linear-gradient(90deg, #74c69d, #40916c)"
-            }} />
-          </div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#aaa" }}>
-            <span>🥗 Dieta: ~{consumedDietKcal} kcal</span>
-            {totalCheatKcal > 0 && <span>🍕 Sgarri: +{totalCheatKcal} kcal</span>}
-            <span style={{ color: overBudget ? "#c1440e" : "#52b788", fontWeight: 600 }}>
-              {overBudget ? `⚠️ +${totalKcalDay - DAILY_KCAL} kcal sforato` : `✅ Rimangono ~${remainingKcal} kcal`}
-            </span>
-          </div>
-        </div>
+      <div style={{maxWidth:480,margin:"0 auto",padding:"0 16px"}}>
 
-        {/* Fasting toggle */}
-        <div style={{ ...card }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#1b4332", marginBottom: 10 }}>⚡ Digiuno intermittente</div>
-          <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => todayFasting && setDayFasting(todayFasting)} style={{ flex: 1, padding: "10px 8px", borderRadius: 12, cursor: "pointer", border: `2px solid ${!todayFasting ? "#2d6a4f" : "#e0e0e0"}`, background: !todayFasting ? "#d8f3dc" : "#fafafa", color: !todayFasting ? "#2d6a4f" : "#aaa", fontWeight: !todayFasting ? 700 : 400, fontSize: 12, textAlign: "center" }}>
-              <div style={{ fontSize: 18 }}>🥗</div><div>Normale</div><div style={{ fontSize: 10, opacity: 0.7 }}>4 pasti · 1.200 kcal</div>
-            </button>
-            <button onClick={() => setDayFasting("no_breakfast")} style={{ flex: 1, padding: "10px 8px", borderRadius: 12, cursor: "pointer", border: `2px solid ${todayFasting === "no_breakfast" ? "#e07a5f" : "#e0e0e0"}`, background: todayFasting === "no_breakfast" ? "#fde8e2" : "#fafafa", color: todayFasting === "no_breakfast" ? "#c1440e" : "#aaa", fontWeight: todayFasting === "no_breakfast" ? 700 : 400, fontSize: 12, textAlign: "center" }}>
-              <div style={{ fontSize: 18 }}>🌅</div><div>Salto colazione</div><div style={{ fontSize: 10, opacity: 0.7 }}>12:00–20:00</div>
-            </button>
-            <button onClick={() => setDayFasting("no_dinner")} style={{ flex: 1, padding: "10px 8px", borderRadius: 12, cursor: "pointer", border: `2px solid ${todayFasting === "no_dinner" ? "#6c63ac" : "#e0e0e0"}`, background: todayFasting === "no_dinner" ? "#ede9f8" : "#fafafa", color: todayFasting === "no_dinner" ? "#4a3f8a" : "#aaa", fontWeight: todayFasting === "no_dinner" ? 700 : 400, fontSize: 12, textAlign: "center" }}>
-              <div style={{ fontSize: 18 }}>🌇</div><div>Salto cena</div><div style={{ fontSize: 10, opacity: 0.7 }}>8:00–16:00</div>
-            </button>
-          </div>
-          {fastingInfo && (
-            <div style={{ marginTop: 10, padding: "8px 12px", borderRadius: 10, background: todayFasting === "no_breakfast" ? "#fde8e2" : "#ede9f8", color: todayFasting === "no_breakfast" ? "#c1440e" : "#4a3f8a", fontSize: 12, fontWeight: 500 }}>
-              {fastingInfo.icon} <strong>{fastingInfo.label}</strong> · {fastingInfo.hours}
-            </div>
-          )}
-        </div>
-
-        {/* Meals */}
-        <div style={{ ...card }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#1b4332" }}>{day}</div>
-              <div style={{ fontSize: 12, color: "#74c69d", marginTop: 2 }}>{completedMeals}/{totalMeals} pasti completati</div>
-            </div>
-            <div style={{ width: 52, height: 52, borderRadius: "50%", background: `conic-gradient(#40916c ${progress * 3.6}deg, #d8f3dc 0deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, color: "#2d6a4f" }}>{progress}%</div>
-            </div>
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {activeMealKeys.map(meal => {
-              const done     = !!checked[`${day}-${meal}`];
-              const isEditing = editingMeal === meal;
-              const isCustom  = !!mealEdits[`${day}-${meal}`];
-              const kcal      = MEAL_KCAL[meal] || 0;
-              return (
-                <div key={meal} style={{ borderRadius: 12, border: `1.5px solid ${done ? "#95d5b2" : isCustom ? "#f4c9b3" : "#e9f5ee"}`, overflow: "hidden" }}>
-                  {/* Main row — tap to check */}
-                  <div onClick={() => !isEditing && toggleMeal(meal)} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 14px", background: done ? "#d8f3dc" : isCustom ? "#fff8f5" : "#f8fffe", cursor: isEditing ? "default" : "pointer" }}>
-                    <div style={{ fontSize: 22, lineHeight: 1, marginTop: 1 }}>{mealIcons[meal] || "🍴"}</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: done ? "#2d6a4f" : "#555", textDecoration: done ? "line-through" : "none" }}>{mealLabels[meal]}</span>
-                        {isCustom && <span style={{ fontSize: 10, color: "#e07a5f", fontWeight: 600 }}>✏️ modificato</span>}
-                        <span style={{ fontSize: 10, color: "#aaa", marginLeft: "auto" }}>~{kcal} kcal</span>
-                      </div>
-                      {isEditing ? (
-                        <textarea
-                          value={editText}
-                          onChange={e => setEditText(e.target.value)}
-                          onClick={e => e.stopPropagation()}
-                          rows={3}
-                          style={{ width: "100%", fontSize: 12, padding: "6px 8px", borderRadius: 8, border: "1.5px solid #f4c9b3", resize: "vertical", boxSizing: "border-box", outline: "none", fontFamily: "inherit" }}
-                        />
-                      ) : (
-                        <div style={{ fontSize: 12, color: done ? "#52b788" : "#888", lineHeight: 1.4 }}>{dayMeals[meal]}</div>
-                      )}
-                    </div>
-                    <div onClick={e => { e.stopPropagation(); !isEditing && toggleMeal(meal); }} style={{ width: 24, height: 24, borderRadius: "50%", background: done ? "#2d6a4f" : "white", border: `2px solid ${done ? "#2d6a4f" : "#b7e4c7"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, cursor: "pointer" }}>
-                      {done && <span style={{ color: "white", fontSize: 13, fontWeight: 700 }}>✓</span>}
-                    </div>
-                  </div>
-                  {/* Edit toolbar */}
-                  {isEditing ? (
-                    <div style={{ display: "flex", gap: 6, padding: "8px 14px", background: "#fff8f5", borderTop: "1px solid #f4c9b3" }}>
-                      <button onClick={saveMealEdit} style={{ flex: 1, padding: "7px", borderRadius: 8, border: "none", background: "#40916c", color: "white", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>✓ Salva</button>
-                      <button onClick={() => setEditingMeal(null)} style={{ flex: 1, padding: "7px", borderRadius: 8, border: "1px solid #e0e0e0", background: "white", color: "#888", fontSize: 12, cursor: "pointer" }}>Annulla</button>
-                      {isCustom && <button onClick={() => { resetMealEdit(meal); setEditingMeal(null); }} style={{ flex: 1, padding: "7px", borderRadius: 8, border: "1px solid #f4c9b3", background: "white", color: "#c1440e", fontSize: 12, cursor: "pointer" }}>↺ Ripristina</button>}
-                    </div>
-                  ) : (
-                    <div style={{ padding: "5px 14px 8px", background: done ? "#d8f3dc" : isCustom ? "#fff8f5" : "#f8fffe" }}>
-                      <button onClick={e => { e.stopPropagation(); startEditMeal(meal); }} style={{ fontSize: 11, color: "#aaa", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                        ✏️ Modifica ingredienti
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Water */}
-        <div style={{ ...card }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#1b4332" }}>💧 Acqua</div>
-              <div style={{ fontSize: 12, color: "#74c69d", marginTop: 2 }}>{glasses}/{WATER_GLASSES} bicchieri · obiettivo 2 litri</div>
-            </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: glasses >= WATER_GLASSES ? "#2d6a4f" : "#aaa", background: glasses >= WATER_GLASSES ? "#d8f3dc" : "#f5f5f5", padding: "4px 10px", borderRadius: 20 }}>
-              {glasses >= WATER_GLASSES ? "🎉 Obiettivo!" : `${waterProgress}%`}
-            </div>
-          </div>
-          <div style={{ height: 8, borderRadius: 8, background: "#e9f5ee", marginBottom: 16, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${waterProgress}%`, background: "linear-gradient(90deg, #74c69d, #40916c)", borderRadius: 8, transition: "width 0.3s ease" }} />
-          </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {Array.from({ length: WATER_GLASSES }, (_, i) => (
-              <button key={i} onClick={() => setGlasses(i < glasses ? i : i + 1)} style={{ width: 42, height: 42, borderRadius: 12, border: "none", background: i < glasses ? "linear-gradient(135deg, #74c69d, #40916c)" : "#f0faf4", fontSize: 18, cursor: "pointer", boxShadow: i < glasses ? "0 2px 6px rgba(64,145,108,0.3)" : "none" }}>
-                {i < glasses ? "💧" : "🫙"}
+        {/* Bottom tab nav */}
+        <div style={{position:"fixed",bottom:0,left:0,right:0,background:"white",boxShadow:"0 -2px 12px rgba(0,0,0,0.08)",zIndex:100,display:"flex",justifyContent:"center"}}>
+          <div style={{maxWidth:480,width:"100%",display:"flex"}}>
+            {[
+              {id:"dieta",   icon:"🥗", label:"Dieta"},
+              {id:"corpo",   icon:"⚖️", label:"Corpo"},
+              {id:"wellness",icon:"🌙", label:"Benessere"},
+              {id:"integr",  icon:"💊", label:"Integratori"},
+            ].map(tab=>(
+              <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{
+                flex:1,padding:"10px 4px 8px",border:"none",background:"none",cursor:"pointer",
+                color:activeTab===tab.id?"#2d6a4f":"#aaa",
+                borderTop:`2px solid ${activeTab===tab.id?"#2d6a4f":"transparent"}`,
+              }}>
+                <div style={{fontSize:20}}>{tab.icon}</div>
+                <div style={{fontSize:10,fontWeight:activeTab===tab.id?700:400,marginTop:2}}>{tab.label}</div>
               </button>
             ))}
           </div>
-          <div style={{ fontSize: 11, color: "#aaa", marginTop: 10 }}>Tocca un bicchiere per segnarlo · toccalo di nuovo per rimuoverlo</div>
         </div>
 
-        {/* Extra tips */}
-        <div style={{ ...card }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#1b4332" }}>⚡ Consigli extra</div>
-              <div style={{ fontSize: 12, color: "#74c69d", marginTop: 2 }}>{completedTips}/{EXTRA_TIPS.length} completati oggi</div>
+        {/* ── TAB: DIETA ── */}
+        {activeTab==="dieta" && <>
+
+          {/* Budget bar */}
+          <div style={{...card,marginTop:8,padding:"12px 18px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+              <span style={{fontSize:13,fontWeight:700,color:"#1b4332"}}>📊 Budget {isToday?"oggi":keyLabel(selectedKey)}</span>
+              <span style={{fontSize:12,fontWeight:700,color:overBudget?"#c1440e":"#2d6a4f"}}>{totalKcalDay}/{DAILY_KCAL} kcal</span>
             </div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: completedTips === EXTRA_TIPS.length ? "#2d6a4f" : "#aaa", background: completedTips === EXTRA_TIPS.length ? "#d8f3dc" : "#f5f5f5", padding: "4px 10px", borderRadius: 20 }}>
-              {completedTips === EXTRA_TIPS.length ? "🌟 Perfetta!" : `${completedTips}/${EXTRA_TIPS.length}`}
+            <div style={{height:8,borderRadius:8,background:"#e9f5ee",overflow:"hidden",marginBottom:5}}>
+              <div style={{height:"100%",width:`${budgetPct}%`,background:overBudget?"linear-gradient(90deg,#f4a261,#e76f51)":"linear-gradient(90deg,#74c69d,#40916c)",borderRadius:8,transition:"width 0.4s"}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#aaa"}}>
+              <span>🥗 ~{consumedDietKcal} kcal</span>
+              {totalCheatKcal>0&&<span>🍕 +{totalCheatKcal} kcal</span>}
+              <span style={{color:overBudget?"#c1440e":"#52b788",fontWeight:600}}>{overBudget?`⚠️ +${totalKcalDay-DAILY_KCAL} sforata`:`✅ ~${remainingKcal} rimangono`}</span>
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {EXTRA_TIPS.map(tip => {
-              const done = !!tips[`${day}-${tip.id}`];
-              return (
-                <div key={tip.id} onClick={() => toggleTip(tip.id)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 14px", borderRadius: 12, background: done ? "#d8f3dc" : "#f8fffe", border: `1.5px solid ${done ? "#95d5b2" : "#e9f5ee"}`, cursor: "pointer" }}>
-                  <div style={{ fontSize: 20 }}>{tip.icon}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: done ? "#2d6a4f" : "#555", textDecoration: done ? "line-through" : "none", marginBottom: 1 }}>{tip.label}</div>
-                    <div style={{ fontSize: 11, color: done ? "#52b788" : "#aaa" }}>{tip.desc}</div>
+
+          {/* Fasting */}
+          <div style={{...card}}>
+            <div style={{fontSize:14,fontWeight:700,color:"#1b4332",marginBottom:10}}>⚡ Digiuno intermittente</div>
+            <div style={{display:"flex",gap:8}}>
+              {[
+                {mode:null,      icon:"🥗",label:"Normale",    sub:"4 pasti",     col:"#2d6a4f",bg:"#d8f3dc",bc:"#2d6a4f"},
+                {mode:"no_breakfast",icon:"🌅",label:"Salto col.",sub:"12:00–20:00",col:"#c1440e",bg:"#fde8e2",bc:"#e07a5f"},
+                {mode:"no_dinner",   icon:"🌇",label:"Salto cena",sub:"8:00–16:00", col:"#4a3f8a",bg:"#ede9f8",bc:"#6c63ac"},
+              ].map(o=>{
+                const active = todayFasting===o.mode;
+                return (
+                  <button key={String(o.mode)} onClick={()=>o.mode?setDayFasting(o.mode):todayFasting&&setDayFasting(todayFasting)} style={{
+                    flex:1,padding:"10px 6px",borderRadius:12,border:`2px solid ${active?o.bc:"#e0e0e0"}`,
+                    background:active?o.bg:"#fafafa",color:active?o.col:"#aaa",
+                    fontWeight:active?700:400,fontSize:12,textAlign:"center",cursor:"pointer"
+                  }}>
+                    <div style={{fontSize:18}}>{o.icon}</div>
+                    <div>{o.label}</div>
+                    <div style={{fontSize:10,opacity:0.7}}>{o.sub}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Meals */}
+          <div style={{...card}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:16,fontWeight:700,color:"#1b4332"}}>{keyLabel(selectedKey)}</div>
+                <div style={{fontSize:12,color:"#74c69d",marginTop:2}}>{completedMeals}/{totalMeals} pasti</div>
+              </div>
+              <div style={{width:50,height:50,borderRadius:"50%",background:`conic-gradient(#40916c ${mealPct*3.6}deg,#d8f3dc 0deg)`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <div style={{width:36,height:36,borderRadius:"50%",background:"white",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:"#2d6a4f"}}>{mealPct}%</div>
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              {activeMealKeys.map(meal=>{
+                const done    = !!checked[selectedKey+"-"+meal];
+                const isEdit  = editingMeal===meal;
+                const isCust  = !!(dayCustom[meal]);
+                return (
+                  <div key={meal} style={{borderRadius:12,border:`1.5px solid ${done?"#95d5b2":isCust?"#f4c9b3":"#e9f5ee"}`,overflow:"hidden"}}>
+                    <div onClick={()=>!isEdit&&toggleMeal(meal)} style={{display:"flex",alignItems:"flex-start",gap:12,padding:"12px 14px",background:done?"#d8f3dc":isCust?"#fff8f5":"#f8fffe",cursor:isEdit?"default":"pointer"}}>
+                      <div style={{fontSize:20,marginTop:1}}>{MEAL_ICONS[meal]}</div>
+                      <div style={{flex:1}}>
+                        <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                          <span style={{fontSize:13,fontWeight:700,color:done?"#2d6a4f":"#555",textDecoration:done?"line-through":"none"}}>{MEAL_LABELS[meal]}</span>
+                          {isCust&&<span style={{fontSize:10,color:"#e07a5f",fontWeight:600}}>✏️</span>}
+                          <span style={{fontSize:10,color:"#aaa",marginLeft:"auto"}}>~{MEAL_KCAL[meal]} kcal</span>
+                        </div>
+                        {isEdit?(
+                          <textarea value={editText} onChange={e=>setEditText(e.target.value)} onClick={e=>e.stopPropagation()} rows={3}
+                            style={{width:"100%",fontSize:12,padding:"6px 8px",borderRadius:8,border:"1.5px solid #f4c9b3",resize:"vertical",boxSizing:"border-box",outline:"none"}}/>
+                        ):(
+                          <div style={{fontSize:12,color:done?"#52b788":"#888",lineHeight:1.4}}>{dayMeals[meal]}</div>
+                        )}
+                      </div>
+                      <div onClick={e=>{e.stopPropagation();!isEdit&&toggleMeal(meal);}} style={{width:24,height:24,borderRadius:"50%",background:done?"#2d6a4f":"white",border:`2px solid ${done?"#2d6a4f":"#b7e4c7"}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,marginTop:2,cursor:"pointer"}}>
+                        {done&&<span style={{color:"white",fontSize:13,fontWeight:700}}>✓</span>}
+                      </div>
+                    </div>
+                    {isEdit?(
+                      <div style={{display:"flex",gap:6,padding:"8px 14px",background:"#fff8f5",borderTop:"1px solid #f4c9b3"}}>
+                        <button onClick={saveEdit} style={{flex:1,padding:7,borderRadius:8,border:"none",background:"#40916c",color:"white",fontWeight:700,fontSize:12,cursor:"pointer"}}>✓ Salva</button>
+                        <button onClick={()=>setEditingMeal(null)} style={{flex:1,padding:7,borderRadius:8,border:"1px solid #e0e0e0",background:"white",color:"#888",fontSize:12,cursor:"pointer"}}>Annulla</button>
+                        {isCust&&<button onClick={()=>{resetEdit(meal);setEditingMeal(null);}} style={{flex:1,padding:7,borderRadius:8,border:"1px solid #f4c9b3",background:"white",color:"#c1440e",fontSize:12,cursor:"pointer"}}>↺ Ripristina</button>}
+                      </div>
+                    ):(
+                      <div style={{padding:"5px 14px 8px",background:done?"#d8f3dc":isCust?"#fff8f5":"#f8fffe"}}>
+                        <button onClick={e=>{e.stopPropagation();startEdit(meal);}} style={{fontSize:11,color:"#bbb",background:"none",border:"none",cursor:"pointer",padding:0}}>✏️ Modifica / inserisci cosa hai mangiato</button>
+                      </div>
+                    )}
                   </div>
-                  <div style={{ width: 24, height: 24, borderRadius: "50%", background: done ? "#2d6a4f" : "white", border: `2px solid ${done ? "#2d6a4f" : "#b7e4c7"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {done && <span style={{ color: "white", fontSize: 13, fontWeight: 700 }}>✓</span>}
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Water */}
+          <div style={{...card}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:16,fontWeight:700,color:"#1b4332"}}>💧 Acqua</div>
+                <div style={{fontSize:12,color:"#74c69d",marginTop:2}}>{glasses}/{WATER_GLASSES} bicchieri</div>
+              </div>
+              <div style={{fontSize:12,fontWeight:700,color:glasses>=WATER_GLASSES?"#2d6a4f":"#aaa",background:glasses>=WATER_GLASSES?"#d8f3dc":"#f5f5f5",padding:"4px 10px",borderRadius:20}}>
+                {glasses>=WATER_GLASSES?"🎉 Obiettivo!":waterPct+"%"}
+              </div>
+            </div>
+            <div style={{height:8,borderRadius:8,background:"#e9f5ee",marginBottom:14,overflow:"hidden"}}>
+              <div style={{height:"100%",width:`${waterPct}%`,background:"linear-gradient(90deg,#74c69d,#40916c)",borderRadius:8,transition:"width 0.3s"}}/>
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {Array.from({length:WATER_GLASSES},(_,i)=>(
+                <button key={i} onClick={()=>setGlasses(i<glasses?i:i+1)} style={{width:42,height:42,borderRadius:12,border:"none",background:i<glasses?"linear-gradient(135deg,#74c69d,#40916c)":"#f0faf4",fontSize:18,cursor:"pointer",boxShadow:i<glasses?"0 2px 6px rgba(64,145,108,0.3)":"none"}}>
+                  {i<glasses?"💧":"🫙"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Extra tips */}
+          <div style={{...card}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:16,fontWeight:700,color:"#1b4332"}}>⚡ Consigli extra</div>
+                <div style={{fontSize:12,color:"#74c69d",marginTop:2}}>{completedTips}/{EXTRA_TIPS.length} oggi</div>
+              </div>
+              <div style={{fontSize:12,fontWeight:700,color:completedTips===EXTRA_TIPS.length?"#2d6a4f":"#aaa",background:completedTips===EXTRA_TIPS.length?"#d8f3dc":"#f5f5f5",padding:"4px 10px",borderRadius:20}}>
+                {completedTips===EXTRA_TIPS.length?"🌟 Perfetta!":completedTips+"/"+EXTRA_TIPS.length}
+              </div>
+            </div>
+            {EXTRA_TIPS.map(tip=>{
+              const done=!!tips[selectedKey+"-"+tip.id];
+              return(
+                <div key={tip.id} onClick={()=>toggleTip(tip.id)} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",borderRadius:12,background:done?"#d8f3dc":"#f8fffe",border:`1.5px solid ${done?"#95d5b2":"#e9f5ee"}`,cursor:"pointer",marginBottom:8}}>
+                  <div style={{fontSize:20}}>{tip.icon}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontWeight:700,color:done?"#2d6a4f":"#555",textDecoration:done?"line-through":"none"}}>{tip.label}</div>
+                    <div style={{fontSize:11,color:done?"#52b788":"#aaa"}}>{tip.desc}</div>
+                  </div>
+                  <div style={{width:24,height:24,borderRadius:"50%",background:done?"#2d6a4f":"white",border:`2px solid ${done?"#2d6a4f":"#b7e4c7"}`,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                    {done&&<span style={{color:"white",fontSize:13,fontWeight:700}}>✓</span>}
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
 
-        {/* Sgarri */}
-        <div style={{ ...card }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#1b4332" }}>🍕 Diario sgarri</div>
-              <div style={{ fontSize: 12, color: "#74c69d", marginTop: 2 }}>
-                {dayCheatList.length === 0 ? "Nessuno sgarro oggi 🌿" : `${dayCheatList.length} sgarro${dayCheatList.length > 1 ? "i" : ""} · ${totalCheatKcal > 0 ? `+${totalCheatKcal} kcal` : "kcal non inserite"}`}
+          {/* Sgarri */}
+          <div style={{...card}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:16,fontWeight:700,color:"#1b4332"}}>🍕 Diario sgarri</div>
+                <div style={{fontSize:12,color:"#74c69d",marginTop:2}}>{dayCheatList.length===0?"Nessuno sgarro 🌿":`${dayCheatList.length} sgarro${dayCheatList.length>1?"i":""}${totalCheatKcal>0?" · +"+totalCheatKcal+" kcal":""}`}</div>
               </div>
+              <button onClick={()=>setShowCheatForm(v=>!v)} style={{padding:"6px 14px",borderRadius:20,border:"none",background:showCheatForm?"#f5f5f5":"linear-gradient(135deg,#f4a261,#e76f51)",color:showCheatForm?"#aaa":"white",fontWeight:700,fontSize:12,cursor:"pointer"}}>
+                {showCheatForm?"Annulla":"+ Aggiungi"}
+              </button>
             </div>
-            <button onClick={() => setShowCheatForm(v => !v)} style={{ padding: "7px 14px", borderRadius: 20, border: "none", background: showCheatForm ? "#f5f5f5" : "linear-gradient(135deg, #f4a261, #e76f51)", color: showCheatForm ? "#aaa" : "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-              {showCheatForm ? "Annulla" : "+ Aggiungi"}
-            </button>
-          </div>
-
-          {showCheatForm && (
-            <div style={{ background: "#fff8f5", border: "1.5px solid #f4c9b3", borderRadius: 12, padding: "14px", marginBottom: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#c1440e", marginBottom: 10 }}>📝 Cosa hai mangiato?</div>
-              <input value={cheatForm.food} onChange={e => setCheatForm(p => ({ ...p, food: e.target.value }))} placeholder="es. Pizza, Gelato, Biscotti..." style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1.5px solid #f4c9b3", fontSize: 13, marginBottom: 8, boxSizing: "border-box", outline: "none" }} />
-              <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-                <input value={cheatForm.qty} onChange={e => setCheatForm(p => ({ ...p, qty: e.target.value }))} placeholder="Quantità" type="number" style={{ flex: 1, padding: "9px 12px", borderRadius: 8, border: "1.5px solid #f4c9b3", fontSize: 13, outline: "none" }} />
-                <select value={cheatForm.unit} onChange={e => setCheatForm(p => ({ ...p, unit: e.target.value }))} style={{ flex: 1, padding: "9px 12px", borderRadius: 8, border: "1.5px solid #f4c9b3", fontSize: 13, outline: "none", background: "white" }}>
-                  <option value="g">grammi</option><option value="ml">ml</option><option value="porzione">porzione</option>
-                  <option value="fetta">fetta</option><option value="pezzo">pezzo</option><option value="cucchiaio">cucchiaio</option>
-                </select>
-                <input value={cheatForm.kcal} onChange={e => setCheatForm(p => ({ ...p, kcal: e.target.value }))} placeholder="kcal (~)" type="number" style={{ flex: 1, padding: "9px 12px", borderRadius: 8, border: "1.5px solid #f4c9b3", fontSize: 13, outline: "none" }} />
+            {showCheatForm&&(
+              <div style={{background:"#fff8f5",border:"1.5px solid #f4c9b3",borderRadius:12,padding:14,marginBottom:12}}>
+                <input value={cheatForm.food} onChange={e=>setCheatForm(p=>({...p,food:e.target.value}))} placeholder="Cosa hai mangiato?" style={{width:"100%",padding:"9px 12px",borderRadius:8,border:"1.5px solid #f4c9b3",fontSize:13,marginBottom:8,boxSizing:"border-box",outline:"none"}}/>
+                <div style={{display:"flex",gap:6,marginBottom:8}}>
+                  <input value={cheatForm.qty} onChange={e=>setCheatForm(p=>({...p,qty:e.target.value}))} placeholder="Qtà" type="number" style={{flex:1,padding:"9px 10px",borderRadius:8,border:"1.5px solid #f4c9b3",fontSize:13,outline:"none"}}/>
+                  <select value={cheatForm.unit} onChange={e=>setCheatForm(p=>({...p,unit:e.target.value}))} style={{flex:1,padding:"9px 6px",borderRadius:8,border:"1.5px solid #f4c9b3",fontSize:13,outline:"none",background:"white"}}>
+                    <option>g</option><option>ml</option><option>porzione</option><option>fetta</option><option>pezzo</option>
+                  </select>
+                  <input value={cheatForm.kcal} onChange={e=>setCheatForm(p=>({...p,kcal:e.target.value}))} placeholder="kcal" type="number" style={{flex:1,padding:"9px 10px",borderRadius:8,border:"1.5px solid #f4c9b3",fontSize:13,outline:"none"}}/>
+                </div>
+                <input value={cheatForm.note} onChange={e=>setCheatForm(p=>({...p,note:e.target.value}))} placeholder="Note (es. compleanno...)" style={{width:"100%",padding:"9px 12px",borderRadius:8,border:"1.5px solid #f4c9b3",fontSize:13,marginBottom:10,boxSizing:"border-box",outline:"none"}}/>
+                <button onClick={addCheat} style={{width:"100%",padding:10,borderRadius:10,border:"none",background:"linear-gradient(135deg,#f4a261,#e76f51)",color:"white",fontWeight:700,fontSize:13,cursor:"pointer"}}>Salva nel diario</button>
               </div>
-              <input value={cheatForm.note} onChange={e => setCheatForm(p => ({ ...p, note: e.target.value }))} placeholder="Note opzionali (es. compleanno, cena fuori...)" style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1.5px solid #f4c9b3", fontSize: 13, marginBottom: 10, boxSizing: "border-box", outline: "none" }} />
-              <div style={{ fontSize: 11, color: "#aaa", marginBottom: 10 }}>💡 Se inserisci le kcal, il budget giornaliero si aggiorna in tempo reale!</div>
-              <button onClick={addCheat} style={{ width: "100%", padding: 11, borderRadius: 10, border: "none", background: "linear-gradient(135deg, #f4a261, #e76f51)", color: "white", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>Salva nel diario</button>
-            </div>
-          )}
-
-          {dayCheatList.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {dayCheatList.map(c => (
-                <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 12, background: "#fff8f5", border: "1.5px solid #f4c9b3" }}>
-                  <div style={{ fontSize: 20 }}>🍕</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#c1440e" }}>{c.food}</div>
-                    <div style={{ fontSize: 12, color: "#aaa", marginTop: 1 }}>
-                      {c.qty !== "?" ? `${c.qty} ${c.unit}` : "qtà non specificata"}
-                      {c.kcal ? ` · +${c.kcal} kcal` : ""}
-                      {c.note ? ` · ${c.note}` : ""}
-                    </div>
-                  </div>
-                  <button onClick={() => removeCheat(c.id)} style={{ background: "none", border: "none", fontSize: 16, cursor: "pointer", color: "#ccc", padding: 4 }}>✕</button>
+            )}
+            {dayCheatList.map(c=>(
+              <div key={c.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:12,background:"#fff8f5",border:"1.5px solid #f4c9b3",marginBottom:8}}>
+                <div style={{fontSize:18}}>🍕</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#c1440e"}}>{c.food}</div>
+                  <div style={{fontSize:11,color:"#aaa"}}>{c.qty!=="?"?c.qty+" "+c.unit:"qtà n.d."}{c.kcal?" · +"+c.kcal+" kcal":""}{c.note?" · "+c.note:""}</div>
                 </div>
-              ))}
-              {totalCheatKcal > 0 && (
-                <div style={{ padding: "8px 14px", borderRadius: 10, background: overBudget ? "#fde8e2" : "#fff8f5", textAlign: "center", fontSize: 12, fontWeight: 600, color: overBudget ? "#c1440e" : "#e07a5f" }}>
-                  {overBudget ? `⚠️ Hai sforato di ${totalKcalDay - DAILY_KCAL} kcal — domani compensa un po' 💪` : `✅ +${totalCheatKcal} kcal da sgarri — rimangono ~${remainingKcal} kcal`}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Peso & Misure */}
-        <div style={{ ...card }}>
-          {/* Tab switcher */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-            {[{ id: "peso", label: "⚖️ Peso", }, { id: "misure", label: "📏 Misure" }].map(tab => (
-              <button key={tab.id} onClick={() => setActiveBodyTab(tab.id)} style={{
-                flex: 1, padding: "9px", borderRadius: 12, border: "none", cursor: "pointer",
-                background: activeBodyTab === tab.id ? "#2d6a4f" : "#f0faf4",
-                color: activeBodyTab === tab.id ? "white" : "#2d6a4f",
-                fontWeight: activeBodyTab === tab.id ? 700 : 500, fontSize: 13
-              }}>{tab.label}</button>
+                <button onClick={()=>removeCheat(c.id)} style={{background:"none",border:"none",fontSize:16,color:"#ccc",cursor:"pointer"}}>✕</button>
+              </div>
             ))}
           </div>
 
-          {activeBodyTab === "peso" && (() => {
-            const lostKg   = firstWeight ? +(START_KG - lastWeight.kg).toFixed(1) : 0;
-            const toGoKg   = lastWeight  ? +(lastWeight.kg - GOAL_KG).toFixed(1)  : START_KG - GOAL_KG;
-            const pct      = Math.min(100, Math.max(0, Math.round(((START_KG - (lastWeight?.kg ?? START_KG)) / (START_KG - GOAL_KG)) * 100)));
-            return (
-              <div>
-                {/* Stats row */}
-                <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-                  {[
-                    { label: "Attuale", value: lastWeight ? `${lastWeight.kg} kg` : "—", color: "#2d6a4f" },
-                    { label: "Perso", value: lostKg > 0 ? `-${lostKg} kg` : "—", color: "#40916c" },
-                    { label: "All'obiettivo", value: toGoKg > 0 ? `-${toGoKg} kg` : "🎉", color: toGoKg <= 0 ? "#f4a261" : "#aaa" },
-                  ].map(s => (
-                    <div key={s.label} style={{ flex: 1, textAlign: "center", padding: "10px 6px", borderRadius: 12, background: "#f8fffe", border: "1.5px solid #e9f5ee" }}>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: s.color }}>{s.value}</div>
-                      <div style={{ fontSize: 10, color: "#aaa", marginTop: 2 }}>{s.label}</div>
+          {/* Motivational */}
+          <div style={{textAlign:"center",marginTop:16,padding:16,background:"linear-gradient(135deg,#d8f3dc,#b7e4c7)",borderRadius:16,fontSize:13,color:"#2d6a4f",fontWeight:500}}>
+            {completedMeals>=totalMeals&&glasses>=WATER_GLASSES&&completedTips===EXTRA_TIPS.length&&!overBudget?"🌟 Giornata da 10! Sei una campionessa!":overBudget?`⚠️ Sforata di ${totalKcalDay-DAILY_KCAL} kcal — domani si recupera!`:completedMeals>=totalMeals&&glasses>=WATER_GLASSES?"🎉 Pasti e acqua perfetti!":completedMeals>=totalMeals?"💪 Pasti completati! Bevi ancora!":todayFasting?`⚡ ${FASTING_WINDOWS[todayFasting].hours}`:"🌿 Ogni passo conta. Vai avanti!"}
+          </div>
+        </>}
+
+        {/* ── TAB: CORPO ── */}
+        {activeTab==="corpo" && <>
+          <div style={{...card,marginTop:8}}>
+            <div style={{display:"flex",gap:8,marginBottom:16}}>
+              {[{id:"peso",label:"⚖️ Peso"},{id:"misure",label:"📏 Misure"}].map(tab=>(
+                <button key={tab.id} onClick={()=>setActiveBodyTab(tab.id)} style={{flex:1,padding:9,borderRadius:12,border:"none",cursor:"pointer",background:activeBodyTab===tab.id?"#2d6a4f":"#f0faf4",color:activeBodyTab===tab.id?"white":"#2d6a4f",fontWeight:activeBodyTab===tab.id?700:500,fontSize:13}}>{tab.label}</button>
+              ))}
+            </div>
+
+            {activeBodyTab==="peso"&&(()=>{
+              return (
+                <div>
+                  <div style={{display:"flex",gap:8,marginBottom:14}}>
+                    {[
+                      {label:"Attuale",value:lastWeight?lastWeight.kg+" kg":"—",color:"#2d6a4f"},
+                      {label:"Perso",value:lostKg>0?"-"+lostKg+" kg":"—",color:"#40916c"},
+                      {label:"Manca",value:toGoKg>0?"-"+toGoKg+" kg":"🎉",color:toGoKg<=0?"#f4a261":"#aaa"},
+                    ].map(s=>(
+                      <div key={s.label} style={{flex:1,textAlign:"center",padding:"10px 6px",borderRadius:12,background:"#f8fffe",border:"1.5px solid #e9f5ee"}}>
+                        <div style={{fontSize:16,fontWeight:800,color:s.color}}>{s.value}</div>
+                        <div style={{fontSize:10,color:"#aaa",marginTop:2}}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{marginBottom:14}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#aaa",marginBottom:4}}>
+                      <span>Inizio: {START_KG} kg</span><span>{weightPct}%</span><span>Obiettivo: {GOAL_KG} kg</span>
                     </div>
-                  ))}
-                </div>
-                {/* Progress bar */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#aaa", marginBottom: 4 }}>
-                    <span>Inizio: {START_KG} kg</span><span>{pct}% completato</span><span>Obiettivo: {GOAL_KG} kg</span>
+                    <div style={{height:10,borderRadius:8,background:"#e9f5ee",overflow:"hidden"}}>
+                      <div style={{height:"100%",width:`${weightPct}%`,background:"linear-gradient(90deg,#74c69d,#2d6a4f)",borderRadius:8,transition:"width 0.4s"}}/>
+                    </div>
                   </div>
-                  <div style={{ height: 10, borderRadius: 8, background: "#e9f5ee", overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #74c69d, #2d6a4f)", borderRadius: 8, transition: "width 0.4s ease" }} />
-                  </div>
-                </div>
-                {/* Mini chart */}
-                {weightLog.length > 1 && (() => {
-                  const min = Math.min(...weightLog.map(e => e.kg)) - 0.5;
-                  const max = Math.max(...weightLog.map(e => e.kg)) + 0.5;
-                  const W = 320; const H = 70;
-                  const pts = weightLog.map((e, i) => {
-                    const x = weightLog.length === 1 ? W/2 : (i / (weightLog.length - 1)) * W;
-                    const y = H - ((e.kg - min) / (max - min)) * H;
-                    return `${x},${y}`;
-                  });
-                  return (
-                    <div style={{ marginBottom: 12, overflowX: "auto" }}>
-                      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: 70 }}>
-                        <polyline points={pts.join(" ")} fill="none" stroke="#40916c" strokeWidth="2.5" strokeLinejoin="round" />
-                        {weightLog.map((e, i) => {
-                          const x = weightLog.length === 1 ? W/2 : (i / (weightLog.length - 1)) * W;
-                          const y = H - ((e.kg - min) / (max - min)) * H;
-                          return <circle key={i} cx={x} cy={y} r="4" fill="#2d6a4f" />;
-                        })}
-                      </svg>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#aaa" }}>
-                        <span>{weightLog[0].date.slice(5)}</span>
-                        <span>{weightLog[weightLog.length-1].date.slice(5)}</span>
+                  {weightLog.length>1&&(()=>{
+                    const min=Math.min(...weightLog.map(e=>e.kg))-0.5;
+                    const max=Math.max(...weightLog.map(e=>e.kg))+0.5;
+                    const W=320;const H=70;
+                    const pts=weightLog.map((e,i)=>{
+                      const x=weightLog.length===1?W/2:(i/(weightLog.length-1))*W;
+                      const y=H-((e.kg-min)/(max-min))*H;
+                      return x+","+y;
+                    });
+                    return (
+                      <div style={{marginBottom:12}}>
+                        <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:70}}>
+                          <polyline points={pts.join(" ")} fill="none" stroke="#40916c" strokeWidth="2.5" strokeLinejoin="round"/>
+                          {weightLog.map((e,i)=>{
+                            const x=weightLog.length===1?W/2:(i/(weightLog.length-1))*W;
+                            const y=H-((e.kg-min)/(max-min))*H;
+                            return <circle key={i} cx={x} cy={y} r="4" fill="#2d6a4f"/>;
+                          })}
+                        </svg>
+                        <div style={{display:"flex",justifyContent:"space-between",fontSize:10,color:"#aaa"}}>
+                          <span>{weightLog[0].date.slice(5)}</span>
+                          <span>{weightLog[weightLog.length-1].date.slice(5)}</span>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  {/* History */}
+                  {weightLog.length>0&&(
+                    <div style={{maxHeight:150,overflowY:"auto",marginBottom:12}}>
+                      {[...weightLog].reverse().map((e,i,arr)=>{
+                        const prev=arr[i+1];
+                        const diff=prev?+(e.kg-prev.kg).toFixed(1):null;
+                        return(
+                          <div key={e.date} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid #f0faf4"}}>
+                            <span style={{fontSize:12,color:"#555"}}>{e.date.slice(5).replace("-","/")}</span>
+                            <span style={{fontSize:13,fontWeight:700,color:"#2d6a4f"}}>{e.kg} kg</span>
+                            {diff!==null&&<span style={{fontSize:11,color:diff<0?"#52b788":diff>0?"#e07a5f":"#aaa"}}>{diff>0?"+":""}{diff} kg</span>}
+                            <button onClick={()=>removeWeight(e.date)} style={{background:"none",border:"none",fontSize:13,color:"#ddd",cursor:"pointer"}}>✕</button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {showWeightForm?(
+                    <div>
+                      <div style={{display:"flex",gap:8,marginBottom:8}}>
+                        <input value={weightInput} onChange={e=>setWeightInput(e.target.value)} placeholder="es. 55.4" type="number" step="0.1" style={{flex:1,padding:"10px 12px",borderRadius:10,border:"1.5px solid #b7e4c7",fontSize:14,outline:"none"}}/>
+                        <input value={weightDateInput} onChange={e=>setWeightDateInput(e.target.value)} type="date" style={{flex:1,padding:"10px 8px",borderRadius:10,border:"1.5px solid #b7e4c7",fontSize:13,outline:"none"}}/>
+                      </div>
+                      <div style={{display:"flex",gap:8}}>
+                        <button onClick={saveWeight} style={{flex:1,padding:10,borderRadius:10,border:"none",background:"#2d6a4f",color:"white",fontWeight:700,cursor:"pointer"}}>✓ Salva</button>
+                        <button onClick={()=>setShowWeightForm(false)} style={{padding:"10px 14px",borderRadius:10,border:"1px solid #e0e0e0",background:"white",color:"#aaa",cursor:"pointer"}}>✕</button>
                       </div>
                     </div>
-                  );
-                })()}
-                {/* History */}
-                {weightLog.length > 0 && (
-                  <div style={{ maxHeight: 120, overflowY: "auto", marginBottom: 12 }}>
-                    {[...weightLog].reverse().map((e, i) => {
-                      const prev = weightLog[weightLog.length - 1 - i - 1];
-                      const diff = prev ? +(e.kg - prev.kg).toFixed(1) : null;
-                      return (
-                        <div key={e.date} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid #f0faf4" }}>
-                          <span style={{ fontSize: 12, color: "#555" }}>{e.date.slice(5).replace("-", "/")}</span>
-                          <span style={{ fontSize: 13, fontWeight: 700, color: "#2d6a4f" }}>{e.kg} kg</span>
-                          {diff !== null && <span style={{ fontSize: 11, color: diff < 0 ? "#52b788" : diff > 0 ? "#e07a5f" : "#aaa" }}>{diff > 0 ? "+" : ""}{diff} kg</span>}
+                  ):(
+                    <button onClick={()=>{setShowWeightForm(true);setWeightDateInput(selectedKey);}} style={{width:"100%",padding:10,borderRadius:12,border:"none",background:"linear-gradient(135deg,#74c69d,#2d6a4f)",color:"white",fontWeight:700,fontSize:13,cursor:"pointer"}}>
+                      ⚖️ Inserisci peso (anche passato)
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
+
+            {activeBodyTab==="misure"&&(()=>{
+              return (
+                <div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:14}}>
+                    {measFields.map(f=>{
+                      const cur=lastMeas?.[f.key];
+                      const prev=measLog.length>1?measLog[measLog.length-2][f.key]:null;
+                      const diff=cur&&prev?+(cur-prev).toFixed(1):null;
+                      return(
+                        <div key={f.key} style={{flex:"1 1 calc(33% - 8px)",minWidth:80,textAlign:"center",padding:"10px 4px",borderRadius:12,background:"#f8fffe",border:"1.5px solid #e9f5ee"}}>
+                          <div style={{fontSize:16}}>{f.icon}</div>
+                          <div style={{fontSize:10,color:"#aaa",marginTop:2}}>{f.label}</div>
+                          <div style={{fontSize:14,fontWeight:800,color:"#2d6a4f",marginTop:2}}>{cur?cur+" cm":"—"}</div>
+                          {diff!==null&&<div style={{fontSize:10,color:diff<0?"#52b788":"#e07a5f"}}>{diff>0?"+":""}{diff}</div>}
+                          {firstMeas?.[f.key]&&cur&&firstMeas[f.key]!==cur&&<div style={{fontSize:9,color:"#bbb"}}>inizio:{firstMeas[f.key]}</div>}
                         </div>
                       );
                     })}
                   </div>
-                )}
-                {/* Input */}
-                {showWeightPanel ? (
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <input value={weightInput} onChange={e => setWeightInput(e.target.value)} placeholder="es. 55.4" type="number" step="0.1"
-                      style={{ flex: 1, padding: "10px 12px", borderRadius: 10, border: "1.5px solid #b7e4c7", fontSize: 14, outline: "none" }} />
-                    <button onClick={saveWeight} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#2d6a4f", color: "white", fontWeight: 700, cursor: "pointer" }}>✓ Salva</button>
-                    <button onClick={() => setShowWeightPanel(false)} style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid #e0e0e0", background: "white", color: "#aaa", cursor: "pointer" }}>✕</button>
-                  </div>
-                ) : (
-                  <button onClick={() => setShowWeightPanel(true)} style={{ width: "100%", padding: 10, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #74c69d, #2d6a4f)", color: "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-                    ⚖️ Inserisci peso di oggi
-                  </button>
-                )}
-              </div>
-            );
-          })()}
-
-          {activeBodyTab === "misure" && (() => {
-            return (
-              <div>
-                {/* Last measurements */}
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 14 }}>
-                  {measFields.map(f => {
-                    const cur  = lastMeas?.[f.key];
-                    const prev = measLog.length > 1 ? measLog[measLog.length - 2][f.key] : null;
-                    const diff = cur && prev ? +(cur - prev).toFixed(1) : null;
-                    return (
-                      <div key={f.key} style={{ flex: "1 1 calc(33% - 8px)", minWidth: 80, textAlign: "center", padding: "10px 6px", borderRadius: 12, background: "#f8fffe", border: "1.5px solid #e9f5ee" }}>
-                        <div style={{ fontSize: 16 }}>{f.icon}</div>
-                        <div style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>{f.label}</div>
-                        <div style={{ fontSize: 15, fontWeight: 800, color: "#2d6a4f", marginTop: 2 }}>{cur ? `${cur} cm` : "—"}</div>
-                        {diff !== null && <div style={{ fontSize: 10, color: diff < 0 ? "#52b788" : "#e07a5f" }}>{diff > 0 ? "+" : ""}{diff} cm</div>}
-                        {firstMeas?.[f.key] && cur && firstMeas[f.key] !== cur && (
-                          <div style={{ fontSize: 9, color: "#aaa" }}>inizio: {firstMeas[f.key]} cm</div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-                {/* History */}
-                {measLog.length > 0 && (
-                  <div style={{ maxHeight: 110, overflowY: "auto", marginBottom: 12 }}>
-                    {[...measLog].reverse().map(e => (
-                      <div key={e.date} style={{ fontSize: 11, color: "#888", padding: "5px 0", borderBottom: "1px solid #f0faf4" }}>
-                        <span style={{ fontWeight: 600, color: "#555", marginRight: 8 }}>{e.date.slice(5).replace("-","/")} </span>
-                        {measFields.filter(f => e[f.key]).map(f => `${f.label}: ${e[f.key]}cm`).join(" · ")}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {/* Form */}
-                {showMeasPanel ? (
-                  <div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
-                      {measFields.map(f => (
-                        <div key={f.key} style={{ flex: "1 1 calc(50% - 8px)", minWidth: 120 }}>
-                          <div style={{ fontSize: 11, color: "#888", marginBottom: 3 }}>{f.icon} {f.label} (cm)</div>
-                          <input value={measInput[f.key]} onChange={e => setMeasInput(p => ({ ...p, [f.key]: e.target.value }))}
-                            placeholder="es. 72" type="number" step="0.5"
-                            style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1.5px solid #b7e4c7", fontSize: 13, outline: "none", boxSizing: "border-box" }} />
+                  {measLog.length>0&&(
+                    <div style={{maxHeight:110,overflowY:"auto",marginBottom:12}}>
+                      {[...measLog].reverse().map(e=>(
+                        <div key={e.date} style={{fontSize:11,color:"#888",padding:"5px 0",borderBottom:"1px solid #f0faf4"}}>
+                          <span style={{fontWeight:600,color:"#555",marginRight:6}}>{e.date.slice(5).replace("-","/")}</span>
+                          {measFields.filter(f=>e[f.key]).map(f=>f.label+":"+e[f.key]+"cm").join(" · ")}
                         </div>
                       ))}
                     </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <button onClick={saveMeas} style={{ flex: 1, padding: 10, borderRadius: 10, border: "none", background: "#2d6a4f", color: "white", fontWeight: 700, cursor: "pointer" }}>✓ Salva misure</button>
-                      <button onClick={() => setShowMeasPanel(false)} style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #e0e0e0", background: "white", color: "#aaa", cursor: "pointer" }}>✕</button>
+                  )}
+                  {showMeasForm?(
+                    <div>
+                      <div style={{marginBottom:8}}>
+                        <div style={{fontSize:11,color:"#888",marginBottom:4}}>📅 Data misurazione</div>
+                        <input value={measDateInput} onChange={e=>setMeasDateInput(e.target.value)} type="date" style={{width:"100%",padding:"9px 12px",borderRadius:8,border:"1.5px solid #b7e4c7",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
+                      </div>
+                      <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:10}}>
+                        {measFields.map(f=>(
+                          <div key={f.key} style={{flex:"1 1 calc(50% - 8px)",minWidth:120}}>
+                            <div style={{fontSize:11,color:"#888",marginBottom:3}}>{f.icon} {f.label} (cm)</div>
+                            <input value={measInput[f.key]} onChange={e=>setMeasInput(p=>({...p,[f.key]:e.target.value}))} placeholder="es. 72" type="number" step="0.5" style={{width:"100%",padding:"9px 10px",borderRadius:8,border:"1.5px solid #b7e4c7",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{display:"flex",gap:8}}>
+                        <button onClick={saveMeas} style={{flex:1,padding:10,borderRadius:10,border:"none",background:"#2d6a4f",color:"white",fontWeight:700,cursor:"pointer"}}>✓ Salva misure</button>
+                        <button onClick={()=>setShowMeasForm(false)} style={{padding:"10px 14px",borderRadius:10,border:"1px solid #e0e0e0",background:"white",color:"#aaa",cursor:"pointer"}}>✕</button>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <button onClick={() => setShowMeasPanel(true)} style={{ width: "100%", padding: 10, borderRadius: 12, border: "none", background: "linear-gradient(135deg, #74c69d, #2d6a4f)", color: "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
-                    📏 Inserisci misure di oggi
-                  </button>
-                )}
-              </div>
-            );
-          })()}
-        </div>
-
-        {/* Integratori */}
-        <div style={{ ...card }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#1b4332" }}>💊 Integratori</div>
-              <div style={{ fontSize: 12, color: "#74c69d", marginTop: 2 }}>
-                {integratoriList.filter(i => integratoriCheck[todayStr+"-"+i.id]).length}/{integratoriList.length} presi oggi
-              </div>
-            </div>
-            <button onClick={() => setShowAddIntegr(v => !v)} style={{ padding: "6px 12px", borderRadius: 20, border: "none", background: showAddIntegr ? "#f5f5f5" : "#d8f3dc", color: showAddIntegr ? "#aaa" : "#2d6a4f", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-              {showAddIntegr ? "Annulla" : "+ Aggiungi"}
-            </button>
-          </div>
-          {showAddIntegr && (
-            <div style={{ background: "#f8fffe", border: "1.5px solid #b7e4c7", borderRadius: 12, padding: 12, marginBottom: 12 }}>
-              <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
-                <input value={newIntegr.name} onChange={e => setNewIntegr(p => ({ ...p, name: e.target.value }))} placeholder="Nome integratore" style={{ flex: 2, padding: "8px 10px", borderRadius: 8, border: "1.5px solid #b7e4c7", fontSize: 12, outline: "none" }} />
-                <input value={newIntegr.dose} onChange={e => setNewIntegr(p => ({ ...p, dose: e.target.value }))} placeholder="Dose" style={{ flex: 1, padding: "8px 10px", borderRadius: 8, border: "1.5px solid #b7e4c7", fontSize: 12, outline: "none" }} />
-                <select value={newIntegr.unit} onChange={e => setNewIntegr(p => ({ ...p, unit: e.target.value }))} style={{ flex: 1, padding: "8px 6px", borderRadius: 8, border: "1.5px solid #b7e4c7", fontSize: 12, outline: "none", background: "white" }}>
-                  <option>mg</option><option>g</option><option>UI</option><option>cps</option><option>ml</option><option>gocce</option>
-                </select>
-              </div>
-              <button onClick={addIntegr} style={{ width: "100%", padding: 9, borderRadius: 8, border: "none", background: "#40916c", color: "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>✓ Salva integratore</button>
-            </div>
-          )}
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {integratoriList.map(integ => {
-              const key = todayStr + "-" + integ.id;
-              const done = !!integratoriCheck[key];
-              return (
-                <div key={integ.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 12, background: done ? "#d8f3dc" : "#f8fffe", border: `1.5px solid ${done ? "#95d5b2" : "#e9f5ee"}`, cursor: "pointer" }} onClick={() => toggleIntegr(integ.id)}>
-                  <div style={{ fontSize: 20 }}>💊</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: done ? "#2d6a4f" : "#555", textDecoration: done ? "line-through" : "none" }}>{integ.name}</div>
-                    {integ.dose && <div style={{ fontSize: 11, color: "#aaa" }}>{integ.dose} {integ.unit}</div>}
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: done ? "#2d6a4f" : "white", border: `2px solid ${done ? "#2d6a4f" : "#b7e4c7"}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      {done && <span style={{ color: "white", fontSize: 13, fontWeight: 700 }}>✓</span>}
-                    </div>
-                    <button onClick={e => { e.stopPropagation(); removeIntegr(integ.id); }} style={{ background: "none", border: "none", fontSize: 14, color: "#ddd", cursor: "pointer", padding: 2 }}>✕</button>
-                  </div>
+                  ):(
+                    <button onClick={()=>{setShowMeasForm(true);setMeasDateInput(selectedKey);}} style={{width:"100%",padding:10,borderRadius:12,border:"none",background:"linear-gradient(135deg,#74c69d,#2d6a4f)",color:"white",fontWeight:700,fontSize:13,cursor:"pointer"}}>
+                      📏 Inserisci misure (anche passate)
+                    </button>
+                  )}
                 </div>
               );
-            })}
+            })()}
           </div>
-        </div>
+        </>}
 
-        {/* Sonno · Gonfiore · Note */}
-        <div style={{ ...card }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: "#1b4332" }}>🌙 Benessere del giorno</div>
-            <button onClick={() => setShowWellnessForm(v => !v)} style={{ padding: "6px 12px", borderRadius: 20, border: "none", background: showWellnessForm ? "#f5f5f5" : "#d8f3dc", color: showWellnessForm ? "#aaa" : "#2d6a4f", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-              {showWellnessForm ? "Annulla" : todayWellness.sonno ? "✏️ Modifica" : "+ Compila"}
-            </button>
-          </div>
-
-          {/* Summary cards */}
-          {(todayWellness.sonno || todayWellness.gonfiore || todayWellness.gonfioreCm) && (
-            <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-              {todayWellness.sonno && (
-                <div style={{ flex: 1, textAlign: "center", padding: "10px 6px", borderRadius: 12, background: todayWellness.sonno >= 7 ? "#d8f3dc" : "#fff8f5", border: `1.5px solid ${todayWellness.sonno >= 7 ? "#95d5b2" : "#f4c9b3"}` }}>
-                  <div style={{ fontSize: 18 }}>{sonnoEmoji(todayWellness.sonno)}</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#2d6a4f" }}>{todayWellness.sonno}h</div>
-                  <div style={{ fontSize: 10, color: "#aaa" }}>Sonno</div>
-                </div>
-              )}
-              {todayWellness.gonfiore && (
-                <div style={{ flex: 1, textAlign: "center", padding: "10px 6px", borderRadius: 12, background: todayWellness.gonfiore <= 2 ? "#d8f3dc" : "#fff8f5", border: `1.5px solid ${todayWellness.gonfiore <= 2 ? "#95d5b2" : "#f4c9b3"}` }}>
-                  <div style={{ fontSize: 18 }}>{gonfioreEmoji(todayWellness.gonfiore)}</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#2d6a4f" }}>{todayWellness.gonfiore}/5</div>
-                  <div style={{ fontSize: 10, color: "#aaa" }}>Gonfiore</div>
-                </div>
-              )}
-              {todayWellness.gonfioreCm && (
-                <div style={{ flex: 1, textAlign: "center", padding: "10px 6px", borderRadius: 12, background: "#f8fffe", border: "1.5px solid #e9f5ee" }}>
-                  <div style={{ fontSize: 18 }}>📏</div>
-                  <div style={{ fontSize: 15, fontWeight: 800, color: "#2d6a4f" }}>{todayWellness.gonfioreCm} cm</div>
-                  <div style={{ fontSize: 10, color: "#aaa" }}>Addome</div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {todayWellness.note && !showWellnessForm && (
-            <div style={{ padding: "10px 14px", borderRadius: 12, background: "#f8fffe", border: "1.5px solid #e9f5ee", fontSize: 13, color: "#555", marginBottom: 12, lineHeight: 1.5 }}>
-              📝 {todayWellness.note}
-            </div>
-          )}
-
-          {showWellnessForm && (
-            <div style={{ background: "#f8fffe", border: "1.5px solid #b7e4c7", borderRadius: 12, padding: 14, marginBottom: 4 }}>
-              {/* Sonno */}
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 6 }}>😴 Ore di sonno stanotte</div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  {[5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9].map(h => (
-                    <button key={h} onClick={() => setWellnessInput(p => ({ ...p, sonno: String(h) }))} style={{ flex: 1, padding: "7px 2px", borderRadius: 8, border: "none", fontSize: 11, cursor: "pointer", background: wellnessInput.sonno == h ? "#2d6a4f" : "#e9f5ee", color: wellnessInput.sonno == h ? "white" : "#555", fontWeight: wellnessInput.sonno == h ? 700 : 400 }}>{h}</button>
-                  ))}
-                </div>
-              </div>
-              {/* Gonfiore scala */}
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 6 }}>🫃 Gonfiore addominale (1=nessuno · 5=molto)</div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  {[1,2,3,4,5].map(v => (
-                    <button key={v} onClick={() => setWellnessInput(p => ({ ...p, gonfiore: String(v) }))} style={{ flex: 1, padding: "10px 4px", borderRadius: 8, border: "none", fontSize: 18, cursor: "pointer", background: wellnessInput.gonfiore == v ? "#2d6a4f" : "#e9f5ee" }}>
-                      {gonfioreEmoji(v)}
-                    </button>
-                  ))}
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "#aaa", marginTop: 3 }}>
-                  <span>Nessuno</span><span>Molto</span>
-                </div>
-              </div>
-              {/* Gonfiore cm */}
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 6 }}>📏 Circonferenza addome (cm) — opzionale</div>
-                <input value={wellnessInput.gonfioreCm} onChange={e => setWellnessInput(p => ({ ...p, gonfioreCm: e.target.value }))} placeholder="es. 82" type="number" step="0.5"
-                  style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1.5px solid #b7e4c7", fontSize: 13, outline: "none", boxSizing: "border-box" }} />
-              </div>
-              {/* Note */}
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#555", marginBottom: 6 }}>📝 Note libere (umore, energia, ciclo...)</div>
-                <textarea value={wellnessInput.note} onChange={e => setWellnessInput(p => ({ ...p, note: e.target.value }))} placeholder="Come ti sei sentita oggi? Hai avuto più energia? Il ciclo influenza il gonfiore?..." rows={3}
-                  style={{ width: "100%", padding: "9px 12px", borderRadius: 8, border: "1.5px solid #b7e4c7", fontSize: 13, outline: "none", boxSizing: "border-box", fontFamily: "inherit", resize: "vertical" }} />
-              </div>
-              <button onClick={saveWellness} style={{ width: "100%", padding: 11, borderRadius: 10, border: "none", background: "linear-gradient(135deg, #74c69d, #2d6a4f)", color: "white", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
-                ✓ Salva benessere del giorno
+        {/* ── TAB: WELLNESS ── */}
+        {activeTab==="wellness" && <>
+          <div style={{...card,marginTop:8}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div style={{fontSize:16,fontWeight:700,color:"#1b4332"}}>🌙 Benessere — {keyLabel(selectedKey)}</div>
+              <button onClick={()=>setShowWellnessForm(v=>!v)} style={{padding:"6px 12px",borderRadius:20,border:"none",background:showWellnessForm?"#f5f5f5":"#d8f3dc",color:showWellnessForm?"#aaa":"#2d6a4f",fontWeight:700,fontSize:12,cursor:"pointer"}}>
+                {showWellnessForm?"Annulla":todayWellness.sonno?"✏️ Modifica":"+ Compila"}
               </button>
             </div>
-          )}
+            {(todayWellness.sonno||todayWellness.gonfiore||todayWellness.gonfioreCm)&&!showWellnessForm&&(
+              <div style={{display:"flex",gap:8,marginBottom:14}}>
+                {todayWellness.sonno&&<div style={{flex:1,textAlign:"center",padding:"10px 6px",borderRadius:12,background:todayWellness.sonno>=7?"#d8f3dc":"#fff8f5",border:`1.5px solid ${todayWellness.sonno>=7?"#95d5b2":"#f4c9b3"}`}}>
+                  <div style={{fontSize:18}}>{todayWellness.sonno>=7?"😴✅":"😴"}</div>
+                  <div style={{fontSize:15,fontWeight:800,color:"#2d6a4f"}}>{todayWellness.sonno}h</div>
+                  <div style={{fontSize:10,color:"#aaa"}}>Sonno</div>
+                </div>}
+                {todayWellness.gonfiore&&<div style={{flex:1,textAlign:"center",padding:"10px 6px",borderRadius:12,background:todayWellness.gonfiore<=2?"#d8f3dc":"#fff8f5",border:`1.5px solid ${todayWellness.gonfiore<=2?"#95d5b2":"#f4c9b3"}`}}>
+                  <div style={{fontSize:18}}>{gonfioreEmoji(todayWellness.gonfiore)}</div>
+                  <div style={{fontSize:15,fontWeight:800,color:"#2d6a4f"}}>{todayWellness.gonfiore}/5</div>
+                  <div style={{fontSize:10,color:"#aaa"}}>Gonfiore</div>
+                </div>}
+                {todayWellness.gonfioreCm&&<div style={{flex:1,textAlign:"center",padding:"10px 6px",borderRadius:12,background:"#f8fffe",border:"1.5px solid #e9f5ee"}}>
+                  <div style={{fontSize:18}}>📏</div>
+                  <div style={{fontSize:15,fontWeight:800,color:"#2d6a4f"}}>{todayWellness.gonfioreCm}cm</div>
+                  <div style={{fontSize:10,color:"#aaa"}}>Addome</div>
+                </div>}
+              </div>
+            )}
+            {todayWellness.note&&!showWellnessForm&&(
+              <div style={{padding:"10px 14px",borderRadius:12,background:"#f8fffe",border:"1.5px solid #e9f5ee",fontSize:13,color:"#555",marginBottom:12,lineHeight:1.5}}>
+                📝 {todayWellness.note}
+              </div>
+            )}
+            {showWellnessForm&&(
+              <div style={{background:"#f8fffe",border:"1.5px solid #b7e4c7",borderRadius:12,padding:14}}>
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#555",marginBottom:6}}>😴 Ore di sonno</div>
+                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                    {[5,5.5,6,6.5,7,7.5,8,8.5,9].map(h=>(
+                      <button key={h} onClick={()=>setWellnessInput(p=>({...p,sonno:String(h)}))} style={{flex:"1 1 auto",padding:"7px 4px",borderRadius:8,border:"none",fontSize:11,cursor:"pointer",background:wellnessInput.sonno==h?"#2d6a4f":"#e9f5ee",color:wellnessInput.sonno==h?"white":"#555",fontWeight:wellnessInput.sonno==h?700:400}}>{h}</button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#555",marginBottom:6}}>🫃 Gonfiore (1=nessuno · 5=molto)</div>
+                  <div style={{display:"flex",gap:8}}>
+                    {[1,2,3,4,5].map(v=>(
+                      <button key={v} onClick={()=>setWellnessInput(p=>({...p,gonfiore:String(v)}))} style={{flex:1,padding:"10px 4px",borderRadius:8,border:"none",fontSize:18,cursor:"pointer",background:wellnessInput.gonfiore==v?"#2d6a4f":"#e9f5ee"}}>
+                        {gonfioreEmoji(v)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#555",marginBottom:6}}>📏 Circonferenza addome (cm)</div>
+                  <input value={wellnessInput.gonfioreCm} onChange={e=>setWellnessInput(p=>({...p,gonfioreCm:e.target.value}))} placeholder="es. 82" type="number" step="0.5" style={{width:"100%",padding:"9px 12px",borderRadius:8,border:"1.5px solid #b7e4c7",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
+                </div>
+                <div style={{marginBottom:12}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#555",marginBottom:6}}>📝 Note (umore, energia, ciclo...)</div>
+                  <textarea value={wellnessInput.note} onChange={e=>setWellnessInput(p=>({...p,note:e.target.value}))} placeholder="Come ti sei sentita oggi?" rows={3} style={{width:"100%",padding:"9px 12px",borderRadius:8,border:"1.5px solid #b7e4c7",fontSize:13,outline:"none",boxSizing:"border-box",fontFamily:"inherit",resize:"vertical"}}/>
+                </div>
+                <button onClick={saveWellness} style={{width:"100%",padding:11,borderRadius:10,border:"none",background:"linear-gradient(135deg,#74c69d,#2d6a4f)",color:"white",fontWeight:700,fontSize:14,cursor:"pointer"}}>✓ Salva benessere</button>
+              </div>
+            )}
+            {!todayWellness.sonno&&!todayWellness.gonfiore&&!showWellnessForm&&(
+              <div style={{textAlign:"center",fontSize:12,color:"#aaa",padding:"8px 0"}}>Nessun dato per questo giorno 🌿</div>
+            )}
+          </div>
+        </>}
 
-          {!todayWellness.sonno && !todayWellness.gonfiore && !showWellnessForm && (
-            <div style={{ textAlign: "center", fontSize: 12, color: "#aaa", padding: "8px 0" }}>Nessun dato inserito oggi 🌿</div>
-          )}
-        </div>
-
-        {/* Weekly overview */}
-        <div style={{ ...card }}>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "#1b4332", marginBottom: 14 }}>📅 Settimana in corso</div>
-          <div style={{ display: "flex", gap: 6, alignItems: "flex-end" }}>
-            {DAYS.map((d, i) => {
-              const done = weekProgress[i]; const total = fastingMode[d] ? 3 : 4;
-              const isToday = i === getTodayIndex(); const height = Math.max(8, (done / total) * 56); const full = done >= total;
-              return (
-                <div key={d} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-                  <div style={{ fontSize: 10, fontWeight: 600, color: full ? "#2d6a4f" : "#aaa" }}>{full ? "✓" : done > 0 ? done : ""}</div>
-                  <div onClick={() => setSelectedDay(i)} style={{ width: "100%", height, borderRadius: 6, cursor: "pointer", background: full ? "linear-gradient(180deg, #52b788, #2d6a4f)" : done > 0 ? "linear-gradient(180deg, #95d5b2, #74c69d)" : "#f0faf4", border: isToday ? "2px solid #f4a261" : "none", transition: "height 0.3s ease" }} />
-                  <div style={{ fontSize: 10, color: isToday ? "#f4a261" : "#aaa", fontWeight: isToday ? 700 : 400 }}>{d.slice(0, 2)}</div>
-                  {fastingMode[d] && <div style={{ fontSize: 9, color: fastingMode[d] === "no_breakfast" ? "#e07a5f" : "#6c63ac" }}>⚡</div>}
+        {/* ── TAB: INTEGRATORI ── */}
+        {activeTab==="integr" && <>
+          <div style={{...card,marginTop:8}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <div>
+                <div style={{fontSize:16,fontWeight:700,color:"#1b4332"}}>💊 Integratori</div>
+                <div style={{fontSize:12,color:"#74c69d",marginTop:2}}>{integratoriList.filter(i=>integratoriCheck[selectedKey+"-"+i.id]).length}/{integratoriList.length} presi oggi</div>
+              </div>
+              <button onClick={()=>setShowAddIntegr(v=>!v)} style={{padding:"6px 12px",borderRadius:20,border:"none",background:showAddIntegr?"#f5f5f5":"#d8f3dc",color:showAddIntegr?"#aaa":"#2d6a4f",fontWeight:700,fontSize:12,cursor:"pointer"}}>
+                {showAddIntegr?"Annulla":"+ Aggiungi"}
+              </button>
+            </div>
+            {showAddIntegr&&(
+              <div style={{background:"#f8fffe",border:"1.5px solid #b7e4c7",borderRadius:12,padding:12,marginBottom:12}}>
+                <div style={{display:"flex",gap:6,marginBottom:8}}>
+                  <input value={newIntegr.name} onChange={e=>setNewIntegr(p=>({...p,name:e.target.value}))} placeholder="Nome" style={{flex:2,padding:"8px 10px",borderRadius:8,border:"1.5px solid #b7e4c7",fontSize:12,outline:"none"}}/>
+                  <input value={newIntegr.dose} onChange={e=>setNewIntegr(p=>({...p,dose:e.target.value}))} placeholder="Dose" style={{flex:1,padding:"8px 10px",borderRadius:8,border:"1.5px solid #b7e4c7",fontSize:12,outline:"none"}}/>
+                  <select value={newIntegr.unit} onChange={e=>setNewIntegr(p=>({...p,unit:e.target.value}))} style={{flex:1,padding:"8px 6px",borderRadius:8,border:"1.5px solid #b7e4c7",fontSize:12,outline:"none",background:"white"}}>
+                    <option>mg</option><option>g</option><option>UI</option><option>cps</option><option>ml</option><option>gocce</option>
+                  </select>
+                </div>
+                <button onClick={addIntegr} style={{width:"100%",padding:9,borderRadius:8,border:"none",background:"#40916c",color:"white",fontWeight:700,fontSize:13,cursor:"pointer"}}>✓ Salva</button>
+              </div>
+            )}
+            {integratoriList.map(integ=>{
+              const key=selectedKey+"-"+integ.id;
+              const done=!!integratoriCheck[key];
+              return(
+                <div key={integ.id} onClick={()=>toggleIntegr(integ.id)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",borderRadius:12,background:done?"#d8f3dc":"#f8fffe",border:`1.5px solid ${done?"#95d5b2":"#e9f5ee"}`,cursor:"pointer",marginBottom:8}}>
+                  <div style={{fontSize:20}}>💊</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:13,fontWeight:700,color:done?"#2d6a4f":"#555",textDecoration:done?"line-through":"none"}}>{integ.name}</div>
+                    {integ.dose&&<div style={{fontSize:11,color:"#aaa"}}>{integ.dose} {integ.unit}</div>}
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    <div style={{width:24,height:24,borderRadius:"50%",background:done?"#2d6a4f":"white",border:`2px solid ${done?"#2d6a4f":"#b7e4c7"}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                      {done&&<span style={{color:"white",fontSize:13,fontWeight:700}}>✓</span>}
+                    </div>
+                    <button onClick={e=>{e.stopPropagation();setIntegratoriList(p=>p.filter(i=>i.id!==integ.id));}} style={{background:"none",border:"none",fontSize:14,color:"#ddd",cursor:"pointer"}}>✕</button>
+                  </div>
                 </div>
               );
             })}
           </div>
-        </div>
-
-        {/* Motivational footer */}
-        <div style={{ textAlign: "center", marginTop: 20, padding: 16, background: "linear-gradient(135deg, #d8f3dc, #b7e4c7)", borderRadius: 16, fontSize: 13, color: "#2d6a4f", fontWeight: 500 }}>
-          {completedMeals >= totalMeals && glasses >= WATER_GLASSES && completedTips === EXTRA_TIPS.length && !overBudget
-            ? "🌟 Giornata da 10! Sei una campionessa!"
-            : overBudget
-            ? `⚠️ Sforata di ${totalKcalDay - DAILY_KCAL} kcal — domani si recupera, non ti preoccupare!`
-            : completedMeals >= totalMeals && glasses >= WATER_GLASSES
-            ? "🎉 Pasti e acqua perfetti! Ora i consigli extra!"
-            : completedMeals >= totalMeals
-            ? "💪 Tutti i pasti completati! Bevi ancora un po'!"
-            : todayFasting
-            ? `⚡ Stai digiunando · finestra: ${FASTING_WINDOWS[todayFasting].hours}`
-            : "🌿 Ogni passo conta. Vai avanti!"}
-        </div>
+        </>}
 
       </div>
     </div>
   );
 }
 
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
 </body>
 </html>
